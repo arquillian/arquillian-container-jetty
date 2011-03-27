@@ -2,22 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
    <parent>
-      <groupId>org.jboss.arquillian</groupId>
-      <artifactId>arquillian-build</artifactId>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-parent-jetty</artifactId>
       <version>1.0.0-SNAPSHOT</version>
-      <relativePath>../../build/pom.xml</relativePath>
+      <relativePath>../pom.xml</relativePath>
    </parent>
 
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.jboss.arquillian.container</groupId>
-   <artifactId>arquillian-jetty-embedded-7</artifactId>
-   <name>Arquillian Container Jetty Embedded 7.x and 8.x</name>
-   <description>Jetty Embedded 7.x and 8.x container integration for the Arquillian project</description>
+   <artifactId>arquillian-jetty-embedded-6.1</artifactId>
+   <name>Arquillian Container Jetty Embedded 6.1.x</name>
+   <description>Jetty Embedded 6.1.x Container integration for the Arquillian project</description>
 
    <properties>
-      <!-- known to work with all Jetty 7.x and 8.x versions (7.0.0.v20091005 through 8.0.0.M0) -->
-      <version.jetty>7.0.0.v20091005</version.jetty>
+      <!-- minimum version known to work with tests (minimum recommended version) -->
+      <version.jetty>6.1.12</version.jetty>
       <version.cdi-api>1.0</version.cdi-api>
       <version.glassfish.el>2.2</version.glassfish.el>
       <version.jsp-api>2.2</version.jsp-api>
@@ -32,6 +32,12 @@
          <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+         <groupId>org.jboss.shrinkwrap</groupId>
+         <artifactId>shrinkwrap-extension-jetty-6</artifactId>
+      </dependency>
+
+      <!-- TODO We likely need a servlet packager to restrict use of EAR -->
       <dependency>
          <groupId>org.jboss.arquillian.protocol</groupId>
          <artifactId>arquillian-protocol-servlet</artifactId>
@@ -50,33 +56,6 @@
          <version>${project.version}</version>
       </dependency>
 
-      <dependency>
-         <groupId>org.jboss.shrinkwrap</groupId>
-         <artifactId>shrinkwrap-extension-jetty-7</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>org.eclipse.jetty</groupId>
-         <artifactId>jetty-webapp</artifactId>
-         <version>${version.jetty}</version>
-         <scope>provided</scope>
-      </dependency>
-
-      <!-- Jetty plus and naming required for testing resource injections -->
-      <dependency>
-         <groupId>org.eclipse.jetty</groupId>
-         <artifactId>jetty-plus</artifactId>
-         <version>${version.jetty}</version>
-         <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.arquillian</groupId>
-         <artifactId>arquillian-impl-base</artifactId>
-         <version>${project.version}</version>
-         <scope>test</scope>
-      </dependency>
-      
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-junit</artifactId>
@@ -97,7 +76,27 @@
          <scope>test</scope>
       </dependency>
 
-      <!-- Weld servlet required for testing CDI injections -->
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty</artifactId>
+         <version>${version.jetty}</version>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- Jetty plus and naming required for testing resource injections -->
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-plus</artifactId>
+         <version>${version.jetty}</version>
+         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-naming</artifactId>
+         <version>${version.jetty}</version>
+         <scope>test</scope>
+      </dependency>
 
       <dependency>
          <groupId>org.glassfish.web</groupId>
@@ -121,8 +120,8 @@
       </dependency>
       
       <dependency>
-        <groupId>org.jboss.shrinkwrap.resolver</groupId>
-        <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+      	<groupId>org.jboss.shrinkwrap.resolver</groupId>
+      	<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       </dependency>
 
    </dependencies>
