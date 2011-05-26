@@ -18,16 +18,16 @@ package org.jboss.arquillian.container.jetty.embedded_6_1;
 
 import java.util.logging.Logger;
 
-import org.jboss.arquillian.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.spi.client.container.DeploymentException;
-import org.jboss.arquillian.spi.client.container.LifecycleException;
-import org.jboss.arquillian.spi.client.protocol.ProtocolDescription;
-import org.jboss.arquillian.spi.client.protocol.metadata.HTTPContext;
-import org.jboss.arquillian.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.spi.client.protocol.metadata.Servlet;
-import org.jboss.arquillian.spi.core.InstanceProducer;
-import org.jboss.arquillian.spi.core.annotation.DeploymentScoped;
-import org.jboss.arquillian.spi.core.annotation.Inject;
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.container.LifecycleException;
+import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
+import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
+import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.jboss.shrinkwrap.jetty_6.api.ShrinkWrapWebAppContext;

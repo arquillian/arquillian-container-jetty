@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.jboss.arquillian.api.Deployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -48,11 +48,11 @@ public class JettyEmbeddedClientTestCase
    public static WebArchive getTestArchive()
    {
       return ShrinkWrap.create(WebArchive.class, "client-test.war")
-         .addClass(TestServlet.class)
+         .addClass(MyServlet.class)
          .setWebXML(new StringAsset(
                Descriptors.create(WebAppDescriptor.class)
                   .version("2.5")
-                  .servlet(TestServlet.class, "/Test")
+                  .servlet(MyServlet.class, "/Test")
                   .exportAsString()
          ));
    }
@@ -61,11 +61,11 @@ public class JettyEmbeddedClientTestCase
    public void shouldBeAbleToInvokeServletInDeployedWebApp() throws Exception
    {
       String body = readAllAndClose(
-            new URL("http://localhost:9595/client-test" + TestServlet.URL_PATTERN).openStream());
+            new URL("http://localhost:9595/client-test" + MyServlet.URL_PATTERN).openStream());
       
       Assert.assertEquals(
             "Verify that the servlet was deployed and returns expected result",
-            TestServlet.MESSAGE,
+            MyServlet.MESSAGE,
             body);
    }
    

@@ -16,8 +16,8 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_6_1;
 
-import org.jboss.arquillian.spi.ConfigurationException;
-import org.jboss.arquillian.spi.client.container.ContainerConfiguration;
+import org.jboss.arquillian.container.spi.ConfigurationException;
+import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
 /**
  * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for
@@ -36,9 +36,6 @@ public class JettyEmbeddedConfiguration implements ContainerConfiguration
 
    private String configurationClasses;
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
-    */
    @Override
    public void validate() throws ConfigurationException
    {

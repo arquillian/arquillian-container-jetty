@@ -18,7 +18,7 @@ package org.jboss.arquillian.container.jetty.embedded_6_1;
 
 import javax.annotation.Resource;
 
-public class TestBean
+public class MyBean
 {
    @Resource(name = "name")
    private String name;

@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import org.jboss.arquillian.api.Deployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -50,7 +50,7 @@ public class JettyEmbeddedInContainerTestCase
    public static WebArchive getTestArchive()
    {
       final WebArchive war = ShrinkWrap.create(WebArchive.class)
-         .addClass(TestBean.class)
+         .addClass(MyBean.class)
          // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
          //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
@@ -73,7 +73,7 @@ public class JettyEmbeddedInContainerTestCase
 
    @Resource(name = "jdbc/test") DataSource ds;
 
-   @Inject TestBean testBean;
+   @Inject MyBean testBean;
 
    @Test
    public void shouldBeAbleToInjectMembersIntoTestClass() throws Exception
