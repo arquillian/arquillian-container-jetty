@@ -16,14 +16,10 @@
     <description>Jetty Embedded 6.1.x Container integration for the Arquillian project</description>
 
     <properties>
-        <!-- minimum version known to work with tests (minimum recommended 
-            version) -->
+        <!-- minimum version known to work with tests (minimum recommended version) -->
         <version.jetty>6.1.12</version.jetty>
         <version.shrinkwrap_container_jetty>1.0.0-beta-1</version.shrinkwrap_container_jetty>
-        <version.cdi-api>1.0</version.cdi-api>
-        <version.glassfish.el>2.2</version.glassfish.el>
-        <version.jsp-api>2.2</version.jsp-api>
-        <version.h2>1.2.138</version.h2>
+        
     </properties>
 
     <dependencies>
@@ -83,14 +79,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>${version.cdi-api}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -101,24 +89,20 @@
         </dependency>
 
         <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>el-impl</artifactId>
-            <version>${version.glassfish.el}</version>
-            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>${version.jsp-api}</version>
-            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${version.h2}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>

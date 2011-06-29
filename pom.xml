@@ -21,12 +21,28 @@
     <name>Arquillian Container Parent Jetty</name>
     <description>Jetty Container integrations for the Arquillian Project</description>
 
+    <scm>
+        <connection>scm:git:git://git@github.com:arquillian/arquillian-container-jetty.git</connection>
+        <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-jetty.git</developerConnection>
+        <url>git://github.com/arquillian/arquillian-container-jetty.git</url>
+    </scm>
 
     <!-- Properties -->
     <properties>
 
         <!-- Versioning -->
-        <version.arquillian_core>1.0.0.CR1-SNAPSHOT</version.arquillian_core>
+        <version.arquillian_core>1.0.0.CR1</version.arquillian_core>
+
+        <version.weld-servlet>1.1.1.Final</version.weld-servlet>
+        <version.cdi-api>1.0</version.cdi-api>
+        <version.glassfish.el>2.2</version.glassfish.el>
+        <version.jsp-api>2.2</version.jsp-api>
+        <version.h2>1.2.138</version.h2>
+
+        <!-- override from parent -->
+        <version.release.plugin>2.1</version.release.plugin>
+        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.5</maven.compiler.source>
 
     </properties>
 
@@ -39,31 +55,73 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-build</artifactId>
+                <version>${version.arquillian_core}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.weld.servlet</groupId>
+                <artifactId>weld-servlet</artifactId>
+                <version>${version.weld-servlet}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>${version.cdi-api}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.web</groupId>
+                <artifactId>el-impl</artifactId>
+                <version>${version.glassfish.el}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>${version.jsp-api}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${version.h2}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <org.apache.maven.global-settings>${settings}</org.apache.maven.global-settings>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>jetty-embedded-6.1</module>
         <module>jetty-embedded-7</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <showDeprecation>false</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                    <optimize>true</optimize>
-                    <compilerVersion>1.6</compilerVersion>
-                    <fork>true</fork>
-                    <argLine>-Xmx512M</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 
