@@ -30,7 +30,7 @@
     <properties>
 
         <!-- Versioning -->
-        <version.arquillian_core>1.0.0.CR1</version.arquillian_core>
+        <version.arquillian_core>1.0.0.Final-SNAPSHOT</version.arquillian_core>
 
         <version.weld-servlet>1.1.1.Final</version.weld-servlet>
         <version.cdi-api>1.0</version.cdi-api>
@@ -40,8 +40,8 @@
 
         <!-- override from parent -->
         <version.release.plugin>2.1</version.release.plugin>
-        <maven.compiler.target>1.5</maven.compiler.target>
-        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
 
     </properties>
 
@@ -106,16 +106,30 @@
                     <localCheckout>true</localCheckout>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemProperties>
-                        <org.apache.maven.global-settings>${settings}</org.apache.maven.global-settings>
-                    </systemProperties>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>build-server</id>
+            <build>
+                <plugins>
+                    <!-- 
+                        surefire default forks the JVM for testing, so we need to pass on the maven.repo.local variable so the MavenResovler used in
+                        the test cases can read from the same lcoal repo. 
+                     -->
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <maven.repo.local>${maven.repo.local}</maven.repo.local>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>jetty-embedded-6.1</module>

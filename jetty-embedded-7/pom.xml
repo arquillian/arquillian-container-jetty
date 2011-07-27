@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.jboss.arquillian.container</groupId>
@@ -15,11 +16,11 @@
     <description>Jetty Embedded 7.x and 8.x container integration for the Arquillian project</description>
 
     <properties>
-        
+
         <!-- known to work with all Jetty 7.x and 8.x versions (7.0.0.v20091005 through 8.0.0.M0) -->
         <version.jetty>7.0.0.v20091005</version.jetty>
         <version.shrinkwrap_container_jetty>1.0.0-beta-1</version.shrinkwrap_container_jetty>
-        
+
     </properties>
 
     <dependencies>
@@ -103,6 +104,12 @@
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
             <scope>test</scope>
         </dependency>
 

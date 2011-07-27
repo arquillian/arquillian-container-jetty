@@ -58,7 +58,10 @@ public class JettyEmbeddedInContainerTestCase
          //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
                   DependencyResolvers.use(MavenDependencyResolver.class)
-                        .artifacts("org.jboss.weld.servlet:weld-servlet:1.1.1.Final").resolveAs(GenericArchive.class))
+                        .loadMetadataFromPom("pom.xml")
+                        .goOffline()
+                        .artifacts("org.jboss.weld.servlet:weld-servlet")
+                        .resolveAs(GenericArchive.class))
          .addAsWebInfResource("jetty-env.xml")
          .addAsWebInfResource(new ByteArrayAsset(new byte[0]), "beans.xml")
          .setWebXML("in-container-web.xml");
