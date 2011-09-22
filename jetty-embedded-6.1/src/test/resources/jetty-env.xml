@@ -15,19 +15,6 @@
       <Arg type="java.lang.Integer">6</Arg>
       <Arg type="boolean">true</Arg>
    </New>
-   <!-- I can't figure out why org.mortbay.jetty.plus.naming.Resource doesn't work here, but it doesn't -->
-   <New class="org.mortbay.jetty.plus.naming.EnvEntry">
-      <Arg><Ref id="webAppCtx"/></Arg>
-      <Arg>BeanManager</Arg>
-      <Arg>
-         <New class="javax.naming.Reference">
-            <Arg>javax.enterprise.inject.spi.BeanManager</Arg>
-            <Arg>org.jboss.weld.resources.ManagerObjectFactory</Arg>
-            <Arg/>
-         </New>
-      </Arg>
-      <Arg type="boolean">true</Arg>
-   </New>
    <New class="org.mortbay.jetty.plus.naming.EnvEntry">
       <Arg><Ref id="webAppCtx"/></Arg>
       <Arg>jdbc/test</Arg>

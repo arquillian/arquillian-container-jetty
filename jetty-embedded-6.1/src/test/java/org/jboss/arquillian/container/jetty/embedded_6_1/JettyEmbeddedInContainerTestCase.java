@@ -27,7 +27,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
@@ -63,7 +63,7 @@ public class JettyEmbeddedInContainerTestCase
                         .artifacts("org.jboss.weld.servlet:weld-servlet")
                         .resolveAs(GenericArchive.class))
          .addAsWebInfResource("jetty-env.xml")
-         .addAsWebInfResource(new ByteArrayAsset(new byte[0]), "beans.xml")
+         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .setWebXML("in-container-web.xml");
       log.info(war.toString(true));
       return war;
