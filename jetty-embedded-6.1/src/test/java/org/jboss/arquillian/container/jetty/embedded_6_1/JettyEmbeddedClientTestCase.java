@@ -22,11 +22,12 @@ import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptors;
-import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
+import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,19 +50,22 @@ public class JettyEmbeddedClientTestCase
    {
       return ShrinkWrap.create(WebArchive.class, "client-test.war")
          .addClass(MyServlet.class)
-         .setWebXML(new StringAsset(
-               Descriptors.create(WebAppDescriptor.class)
-                  .version("2.5")
-                  .servlet(MyServlet.class, "/Test")
-                  .exportAsString()
-         ));
+         .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
+               .version("2.5")
+               .createServlet()
+                  .servletClass(MyServlet.class.getName())
+                  .servletName("MyServlet").up()
+              .createServletMapping()
+                  .servletName("MyServlet")
+                  .urlPattern(MyServlet.URL_PATTERN).up()
+              .exportAsString()));
    }
 
    @Test
-   public void shouldBeAbleToInvokeServletInDeployedWebApp() throws Exception
+   public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception
    {
       String body = readAllAndClose(
-            new URL("http://localhost:9595/client-test" + MyServlet.URL_PATTERN).openStream());
+            new URL(url, MyServlet.URL_PATTERN).openStream());
       
       Assert.assertEquals(
             "Verify that the servlet was deployed and returns expected result",
