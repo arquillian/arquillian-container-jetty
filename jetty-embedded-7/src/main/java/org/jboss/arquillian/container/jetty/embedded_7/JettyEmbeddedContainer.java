@@ -16,14 +16,13 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_7;
 
-import java.util.logging.Logger;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.xml.XmlConfiguration;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
@@ -37,6 +36,8 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.jboss.shrinkwrap.jetty_7.api.ShrinkWrapWebAppContext;
+import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * <p>Jetty Embedded 7.x and 8.x container for the Arquillian project.</p>
@@ -137,11 +138,28 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
          }
          
          server = new Server();
-         Connector connector = new SelectChannelConnector();
-         connector.setHost(containerConfig.getBindAddress());
-         connector.setPort(containerConfig.getBindHttpPort());
-         server.setConnectors(new Connector[] { connector });
-         server.setHandler(new HandlerCollection(true));
+         String serverConfig = containerConfig.getServerConfig();
+         if(serverConfig != null)
+         {
+            URL url = Thread.currentThread().getContextClassLoader().getResource(serverConfig);
+            if(url == null)
+            {
+               throw new IllegalArgumentException("Could not load server config file at " + serverConfig);
+            }
+            else
+            {
+               new XmlConfiguration(url).configure(server);
+               log.info("Configure Jetty Embedded Server with configuration info in " + serverConfig);
+            }
+         }
+         else
+         {
+            Connector connector = new SelectChannelConnector();
+            connector.setHost(containerConfig.getBindAddress());
+            connector.setPort(containerConfig.getBindHttpPort());
+            server.setConnectors(new Connector[]{connector});
+            server.setHandler(new HandlerCollection(true));
+         }
          log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
          server.start();
       } 
