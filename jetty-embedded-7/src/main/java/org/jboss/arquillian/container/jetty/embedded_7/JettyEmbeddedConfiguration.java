@@ -35,6 +35,8 @@ public class JettyEmbeddedConfiguration implements ContainerConfiguration
 
    private boolean jettyPlus = true;
 
+   private String serverConfig;
+
    private String configurationClasses;
 
    /* (non-Javadoc)
@@ -73,6 +75,16 @@ public class JettyEmbeddedConfiguration implements ContainerConfiguration
    public void setJettyPlus(boolean jettyPlus)
    {
       this.jettyPlus = jettyPlus;
+   }
+
+   public String getServerConfig()
+   {
+      return serverConfig;
+   }
+
+   public void setServerConfig(String serverConfig)
+   {
+      this.serverConfig = serverConfig;
    }
 
    public String getConfigurationClasses()
