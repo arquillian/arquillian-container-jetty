@@ -30,7 +30,7 @@
     <properties>
 
         <!-- Versioning -->
-        <version.arquillian_core>1.0.0.Final</version.arquillian_core>
+        <version.arquillian_core>1.0.2.Final</version.arquillian_core>
 
         <version.weld-servlet>1.1.1.Final</version.weld-servlet>
         <version.cdi-api>1.0</version.cdi-api>
