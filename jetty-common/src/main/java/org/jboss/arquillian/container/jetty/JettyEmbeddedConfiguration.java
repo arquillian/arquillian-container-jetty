@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_7;
+package org.jboss.arquillian.container.jetty;
 
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
 /**
  * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for
- * the Jetty Embedded 7.x and 8.x containers.
+ * the Jetty Embedded containers.
  *
  * @author Dan Allen
  * @author Ales Justin
@@ -44,7 +44,7 @@ public class JettyEmbeddedConfiguration implements ContainerConfiguration
    public void validate() throws ConfigurationException
    {
    }
-   
+
    public int getBindHttpPort()
    {
       return bindHttpPort;
