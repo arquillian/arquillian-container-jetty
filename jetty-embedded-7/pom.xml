@@ -25,6 +25,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-jetty-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- org.jboss.arquillian -->
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>

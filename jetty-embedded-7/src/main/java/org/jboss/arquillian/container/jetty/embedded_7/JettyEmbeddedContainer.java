@@ -24,6 +24,8 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.jboss.arquillian.container.jetty.JettyEmbeddedConfiguration;
+import org.jboss.arquillian.container.jetty.VersionUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
@@ -81,18 +83,18 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
    private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
 
    private Server server;
-   
+
    private String[] configurationClasses = null;
 
    private JettyEmbeddedConfiguration containerConfig;
 
-   @Inject @DeploymentScoped 
+   @Inject @DeploymentScoped
    private InstanceProducer<WebAppContext> webAppContextProducer;
-   
+
    public JettyEmbeddedContainer()
    {
    }
-   
+
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
     */
@@ -100,7 +102,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
    {
       return JettyEmbeddedConfiguration.class;
    }
-   
+
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
     */
@@ -108,15 +110,15 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
    {
       return new ProtocolDescription("Servlet 3.0");
    }
-   
+
    public void setup(JettyEmbeddedConfiguration containerConfig)
    {
       this.containerConfig = containerConfig;
    }
-   
+
    public void start() throws LifecycleException
    {
-      try 
+      try
       {
          // explicit configuration classes, as they have changed between jetty7 minor versions
          String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
@@ -135,7 +137,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                configurationClasses = JETTY_PLUS_PRE_7_2_CONFIGURATION_CLASSES;
             }
          }
-         
+
          server = new Server();
          Connector connector = new SelectChannelConnector();
          connector.setHost(containerConfig.getBindAddress());
@@ -144,8 +146,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
          server.setHandler(new HandlerCollection(true));
          log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
          server.start();
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new LifecycleException("Could not start container", e);
       }
@@ -157,8 +159,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
       {
          log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
          server.stop();
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new LifecycleException("Could not stop container", e);
       }
@@ -169,20 +171,20 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     */
    public void deploy(Descriptor descriptor) throws DeploymentException
    {
-      throw new UnsupportedOperationException("Not implemented");      
+      throw new UnsupportedOperationException("Not implemented");
    }
-   
+
    /* (non-Javadoc)
     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
     */
    public void undeploy(Descriptor descriptor) throws DeploymentException
    {
-      throw new UnsupportedOperationException("Not implemented");      
+      throw new UnsupportedOperationException("Not implemented");
    }
-   
+
    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
    {
-      try 
+      try
       {
          WebAppContext wctx = archive.as(ShrinkWrapWebAppContext.class);
 
@@ -197,7 +199,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
          /*
           * ARQ-242 Without this set we result in failure on loading Configuration in container.
-          * ServiceLoader finds service file from AppClassLoader, tried to load JettyContainerConfiguration from AppClassLoader 
+          * ServiceLoader finds service file from AppClassLoader, tried to load JettyContainerConfiguration from AppClassLoader
           * as a ContainerConfiguration from WebAppClassContext. ClassCastException.
           */
          wctx.setParentLoaderPriority(true);
@@ -205,18 +207,18 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
          ((HandlerCollection) server.getHandler()).addHandler(wctx);
          wctx.start();
          webAppContextProducer.set(wctx);
-         
+
          HTTPContext httpContext = new HTTPContext(containerConfig.getBindAddress(), containerConfig.getBindHttpPort());
          for(ServletHolder servlet : wctx.getServletHandler().getServlets())
          {
             httpContext.add(new Servlet(servlet.getName(), servlet.getContextPath()));
          }
-         
+
          return new ProtocolMetaData()
             .addContext(httpContext);
 
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new DeploymentException("Could not deploy " + archive.getName(), e);
       }

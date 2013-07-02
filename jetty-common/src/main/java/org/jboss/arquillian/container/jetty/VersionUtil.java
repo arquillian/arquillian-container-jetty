@@ -10,12 +10,12 @@
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_7;
+package org.jboss.arquillian.container.jetty;
 
 
 /**
@@ -24,21 +24,21 @@ package org.jboss.arquillian.container.jetty.embedded_7;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-class VersionUtil
+public class VersionUtil
 {
    private VersionUtil() {}
-   
+
    public static class Version implements Comparable<Version>
    {
       private Integer major;
       private Integer minor;
-      
+
       public Version(int major, int minor)
       {
          this.major = major;
          this.minor = minor;
       }
-      
+
       /**
        * @return the major
        */
@@ -46,7 +46,7 @@ class VersionUtil
       {
          return major;
       }
-      
+
       /**
        * @return the minor
        */
@@ -54,7 +54,7 @@ class VersionUtil
       {
          return minor;
       }
-      
+
       /* (non-Javadoc)
        * @see java.lang.Comparable#compareTo(java.lang.Object)
        */
@@ -69,18 +69,18 @@ class VersionUtil
          return majorCompare;
       }
    }
-   
+
    private static String expression = "([0-9]{1,5})\\.([0-9]{1,5}).*";
-   
+
    public static Version extract(String version)
    {
       if(version == null || !version.matches(expression))
       {
          return new Version(0, 0);
       }
-      
+
       return new Version(
-            Integer.parseInt(version.replaceAll(expression, "$1")), 
+            Integer.parseInt(version.replaceAll(expression, "$1")),
             Integer.parseInt(version.replaceAll(expression, "$2")));
    }
 
@@ -93,7 +93,7 @@ class VersionUtil
    {
       return greater.compareTo(then) >= 0;
    }
-   
+
    public static boolean isLessThenOrEqual(String less, String then)
    {
       return isLessThenOrEqual(extract(less), extract(then));
