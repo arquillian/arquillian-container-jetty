@@ -39,8 +39,8 @@
         <version.h2>1.3.175</version.h2>
 
         <!-- override from parent -->
-        <maven.compiler.argument.target>1.7</maven.compiler.argument.target>
-        <maven.compiler.argument.source>1.7</maven.compiler.argument.source>
+        <maven.compiler.argument.target>1.5</maven.compiler.argument.target>
+        <maven.compiler.argument.source>1.5</maven.compiler.argument.source>
 
     </properties>
 
