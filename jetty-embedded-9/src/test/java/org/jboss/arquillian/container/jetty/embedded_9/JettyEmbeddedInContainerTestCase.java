@@ -54,13 +54,7 @@ public class JettyEmbeddedInContainerTestCase
          .addClass(MyBean.class)
          // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
          //.addClass(JettyEmbeddedConfiguration.class)
-            .addAsLibraries(
-                    Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.weld.servlet:weld-servlet").withTransitivity().asFile())
-//                  DependencyResolvers.use(MavenDependencyResolver.class)
-//                        .loadMetadataFromPom("pom.xml")
-//                        .goOffline()
-//                        .artifacts("org.jboss.weld.servlet:weld-servlet")
-//                        .resolveAs(GenericArchive.class))
+         .addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jboss.weld.servlet:weld-servlet").withTransitivity().asFile())
          .addAsWebInfResource("jetty-env.xml")
          .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .setWebXML("in-container-web.xml");
