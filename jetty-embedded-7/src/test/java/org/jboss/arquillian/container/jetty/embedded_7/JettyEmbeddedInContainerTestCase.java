@@ -28,8 +28,7 @@ import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,11 +53,12 @@ public class JettyEmbeddedInContainerTestCase
          // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
          //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
-                  DependencyResolvers.use(MavenDependencyResolver.class)
-                        .loadMetadataFromPom("pom.xml")
-                        .goOffline()
-                        .artifacts("org.jboss.weld.servlet:weld-servlet")
-                        .resolveAs(GenericArchive.class))
+                Maven.configureResolver()
+                    .workOffline()
+                    .loadPomFromFile("pom.xml")
+                    .resolve("org.jboss.weld.servlet:weld-servlet")
+                    .withTransitivity()
+                    .as(GenericArchive.class))
          .addAsWebInfResource("jetty-env.xml")
          .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .setWebXML("in-container-web.xml");
