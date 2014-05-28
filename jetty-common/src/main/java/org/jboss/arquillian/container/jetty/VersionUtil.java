@@ -84,12 +84,12 @@ public class VersionUtil
             Integer.parseInt(version.replaceAll(expression, "$2")));
    }
 
-   public static boolean isGraterThenOrEqual(String greater, String then)
+   public static boolean isGreaterThenOrEqual(String greater, String then)
    {
-      return isGraterThenOrEqual(extract(greater), extract(then));
+      return isGreaterThenOrEqual(extract(greater), extract(then));
    }
 
-   public static boolean isGraterThenOrEqual(Version greater, Version then)
+   public static boolean isGreaterThenOrEqual(Version greater, Version then)
    {
       return greater.compareTo(then) >= 0;
    }

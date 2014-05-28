@@ -41,7 +41,7 @@ import org.eclipse.jetty.webapp.Configuration.ClassList;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
 import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.arquillian.container.jetty.VersionUtil;
+import org.jboss.arquillian.container.jetty.EnvUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
@@ -75,7 +75,7 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
  * @author Martin Kouba
  * @version $Revision: $
  */
-public class JettyEmbeddedContainer implements DeployableContainer<Jetty9EmbeddedConfiguration>
+public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration>
 {
     private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
 
@@ -91,7 +91,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<Jetty9Embedde
     private DeploymentManager deployer;
     private ArquillianAppProvider appProvider;
 
-    private Jetty9EmbeddedConfiguration containerConfig;
+    private JettyEmbeddedConfiguration containerConfig;
 
     @Inject
     @DeploymentScoped
@@ -102,9 +102,9 @@ public class JettyEmbeddedContainer implements DeployableContainer<Jetty9Embedde
      * 
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
      */
-    public Class<Jetty9EmbeddedConfiguration> getConfigurationClass()
+    public Class<JettyEmbeddedConfiguration> getConfigurationClass()
     {
-        return Jetty9EmbeddedConfiguration.class;
+        return JettyEmbeddedConfiguration.class;
     }
 
     /*
@@ -114,26 +114,26 @@ public class JettyEmbeddedContainer implements DeployableContainer<Jetty9Embedde
      */
     public ProtocolDescription getDefaultProtocol()
     {
-        return new ProtocolDescription("Servlet 3.1");
+        // Jetty 9 is a Servlet 3.1 container.
+        // However, Arquillian "Protocol" actuall means "Packaging"
+        // TODO: Fix to servlet 3.1 (when available in arquillian)
+        return new ProtocolDescription("Servlet 3.0");
     }
 
-    public void setup(Jetty9EmbeddedConfiguration containerConfig)
+    public void setup(JettyEmbeddedConfiguration containerConfig)
     {
         this.containerConfig = containerConfig;
     }
 
     public void start() throws LifecycleException
     {
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(),"9.0");
+
         try
         {
-            if (!VersionUtil.isGraterThenOrEqual(Server.getVersion(),"9.0"))
-            {
-                throw new LifecycleException("Incompatible Jetty container version on the classpath: " + Server.getVersion());
-            }
-
             server = new Server();
 
-            // Use default configuration classes
+            // Use default configuration classes at the server level
             ClassList serverConf = ClassList.serverDefault(server);
 
             String configuredConfigurationClasses = containerConfig.getConfigurationClasses();

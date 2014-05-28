@@ -17,7 +17,7 @@ import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.arquillian.container.jetty.embedded_9.Jetty9EmbeddedConfiguration.ClassLoaderBehavior;
+import org.jboss.arquillian.container.jetty.embedded_9.JettyEmbeddedConfiguration.ClassLoaderBehavior;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
@@ -94,10 +94,10 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         }
     }
 
-    private final Jetty9EmbeddedConfiguration config;
+    private final JettyEmbeddedConfiguration config;
     private DeploymentManager deploymentManager;
 
-    public ArquillianAppProvider(Jetty9EmbeddedConfiguration config)
+    public ArquillianAppProvider(JettyEmbeddedConfiguration config)
     {
         this.config = config;
     }

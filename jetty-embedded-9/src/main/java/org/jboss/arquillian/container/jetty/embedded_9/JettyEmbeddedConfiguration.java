@@ -20,8 +20,7 @@ import java.io.File;
 import java.net.URI;
 
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.jboss.arquillian.container.spi.ConfigurationException;
-import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
+import org.jboss.arquillian.container.jetty.AbstractJettyEmbeddedConfiguration;
 
 /**
  * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty Embedded containers.
@@ -30,7 +29,7 @@ import org.jboss.arquillian.container.spi.client.container.ContainerConfiguratio
  * @author Ales Justin
  * @version $Revision: $
  */
-public class Jetty9EmbeddedConfiguration implements ContainerConfiguration
+public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration
 {
     public static enum ClassLoaderBehavior
     {
@@ -44,22 +43,12 @@ public class Jetty9EmbeddedConfiguration implements ContainerConfiguration
         SERVLET_SPEC
     }
 
-    private String bindAddress = "localhost";
-
-    private int bindHttpPort = 9090;
-
     /**
      * Classloader Search Order behavior.
      * <p>
      * Default for Arquillian is {@link JAVA_SPEC}.
      */
     private ClassLoaderBehavior classloaderBehavior = ClassLoaderBehavior.JAVA_SPEC;
-
-    /**
-     * List of server configuration classes that can be used for
-     * establishing the configuration tasks for the WebApp being deployed.
-     */
-    private String configurationClasses;
 
     /**
      * Optional override for the default servlet spec descriptor
@@ -89,24 +78,9 @@ public class Jetty9EmbeddedConfiguration implements ContainerConfiguration
      */
     private File tempDirectory;
 
-    public String getBindAddress()
-    {
-        return bindAddress;
-    }
-
-    public int getBindHttpPort()
-    {
-        return bindHttpPort;
-    }
-
     public ClassLoaderBehavior getClassloaderBehavior()
     {
         return classloaderBehavior;
-    }
-
-    public String getConfigurationClasses()
-    {
-        return configurationClasses;
     }
 
     public URI getDefaultsDescriptor()
@@ -139,28 +113,9 @@ public class Jetty9EmbeddedConfiguration implements ContainerConfiguration
         return dumpServerAfterStart;
     }
 
-    public void setBindAddress(String bindAddress)
-    {
-        this.bindAddress = bindAddress;
-    }
-
-    public void setBindHttpPort(int bindHttpPort)
-    {
-        this.bindHttpPort = bindHttpPort;
-    }
-
     public void setClassloaderBehavior(ClassLoaderBehavior classloaderBehavior)
     {
         this.classloaderBehavior = classloaderBehavior;
-    }
-
-    /**
-     * @param configurationClasses
-     *            A comma separated list of fully qualified configuration classes
-     */
-    public void setConfigurationClasses(String configurationClasses)
-    {
-        this.configurationClasses = configurationClasses;
     }
 
     public void setDefaultsDescriptor(URI defaultsDescriptor)
@@ -186,15 +141,5 @@ public class Jetty9EmbeddedConfiguration implements ContainerConfiguration
     public void setTempDirectory(File tempDirectory)
     {
         this.tempDirectory = tempDirectory;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
-     */
-    @Override
-    public void validate() throws ConfigurationException
-    {
     }
 }

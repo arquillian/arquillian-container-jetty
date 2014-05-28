@@ -11,13 +11,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>arquillian-jetty-embedded-7</artifactId>
-    <name>Arquillian Container Jetty Embedded 7.x and 8.x</name>
-    <description>Jetty Embedded 7.x and 8.x container integration for the Arquillian project</description>
+    <name>Arquillian Container Jetty Embedded 7.x</name>
+    <description>Jetty Embedded 7.x container integration for the Arquillian project</description>
 
     <properties>
-
-        <!-- known to work with all Jetty 7.x and 8.x versions (7.0.0.v20091005 through 8.0.0.M0) -->
-        <version.jetty>7.0.0.v20091005</version.jetty>
+        <version.jetty>7.1.1.v20100517</version.jetty>
         <version.shrinkwrap_container_jetty>1.0.0-beta-1</version.shrinkwrap_container_jetty>
 
     </properties>
@@ -68,6 +66,15 @@
             <version>${version.jetty}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <!-- jetty annotations required for security, jndi, and resource annotations -->
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-annotations</artifactId>
+            <version>${version.jetty}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>    <!-- Jetty plus and naming required for testing resource injections -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>

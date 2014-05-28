@@ -16,16 +16,20 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_7;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.log.JavaUtilLog;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.arquillian.container.jetty.JettyEmbeddedConfiguration;
-import org.jboss.arquillian.container.jetty.VersionUtil;
+import org.jboss.arquillian.container.jetty.EnvUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
@@ -41,205 +45,272 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.jboss.shrinkwrap.jetty_7.api.ShrinkWrapWebAppContext;
 
 /**
- * <p>Jetty Embedded 7.x and 8.x container for the Arquillian project.</p>
- *
- * <p>This container only supports a WebArchive deployment. The context path of the
- * deployed application is always set to "/test", which is expected by the Arquillian
- * servlet protocol.</p>
- *
- * <p>Another known issue is that the container configuration process logs an exception when
- * running in-container. However, the container is still configured properly during setup.</p>
- *
+ * <p>
+ * Jetty Embedded 7.x container for the Arquillian project.
+ * </p>
+ * 
+ * <p>
+ * This container only supports a WebArchive deployment. The context path of the deployed application is always set to "/test", which is expected by the
+ * Arquillian servlet protocol.
+ * </p>
+ * 
+ * <p>
+ * Another known issue is that the container configuration process logs an exception when running in-container. However, the container is still configured
+ * properly during setup.
+ * </p>
+ * 
  * @author Dan Allen
  * @author Ales Justin
  * @version $Revision: $
  */
 public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration>
 {
-   public static final String HTTP_PROTOCOL = "http";
+    public static final String HTTP_PROTOCOL = "http";
 
-   public static final String[] JETTY_PLUS_PRE_7_2_CONFIGURATION_CLASSES =
-   {
-       "org.eclipse.jetty.webapp.WebInfConfiguration",
-       "org.eclipse.jetty.webapp.WebXmlConfiguration",
-       "org.eclipse.jetty.webapp.MetaInfConfiguration",
-       "org.eclipse.jetty.webapp.FragmentConfiguration",
-       "org.eclipse.jetty.plus.webapp.EnvConfiguration",
-       "org.eclipse.jetty.plus.webapp.Configuration",
-       "org.eclipse.jetty.webapp.JettyWebXmlConfiguration"
-   };
+    private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
 
-   public static final String[] JETTY_PLUS_CONFIGURATION_CLASSES =
-   {
-       "org.eclipse.jetty.webapp.WebInfConfiguration",
-       "org.eclipse.jetty.webapp.WebXmlConfiguration",
-       "org.eclipse.jetty.webapp.MetaInfConfiguration",
-       "org.eclipse.jetty.webapp.FragmentConfiguration",
-       "org.eclipse.jetty.plus.webapp.EnvConfiguration",
-       "org.eclipse.jetty.plus.webapp.PlusConfiguration",
-       "org.eclipse.jetty.webapp.JettyWebXmlConfiguration"
-   };
+    static
+    {
+        // Make jetty's own logging use java.util.logging
+        org.eclipse.jetty.util.log.Log.setLog(new JavaUtilLog());
+    }
 
-   private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
+    private Server server;
+    private String listeningHost;
+    private int listeningPort;
+    private ContextHandlerCollection contexts;
+    private String[] webappConfigurationClasses = null;
+    private JettyEmbeddedConfiguration containerConfig;
 
-   private Server server;
+    @Inject
+    @DeploymentScoped
+    private InstanceProducer<WebAppContext> webAppContextProducer;
 
-   private String[] configurationClasses = null;
+    public JettyEmbeddedContainer()
+    {
+    }
 
-   private JettyEmbeddedConfiguration containerConfig;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
+     */
+    @Override
+    public Class<JettyEmbeddedConfiguration> getConfigurationClass()
+    {
+        return JettyEmbeddedConfiguration.class;
+    }
 
-   @Inject @DeploymentScoped
-   private InstanceProducer<WebAppContext> webAppContextProducer;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
+     */
+    @Override
+    public ProtocolDescription getDefaultProtocol()
+    {
+        // Jetty 7.x is Servlet 2.5
+        return new ProtocolDescription("Servlet 2.5");
+    }
 
-   public JettyEmbeddedContainer()
-   {
-   }
+    @Override
+    public void setup(JettyEmbeddedConfiguration containerConfig)
+    {
+        this.containerConfig = containerConfig;
+    }
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
-    */
-   public Class<JettyEmbeddedConfiguration> getConfigurationClass()
-   {
-      return JettyEmbeddedConfiguration.class;
-   }
+    @Override
+    public void start() throws LifecycleException
+    {
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(),"7.0");
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
-    */
-   public ProtocolDescription getDefaultProtocol()
-   {
-      return new ProtocolDescription("Servlet 3.0");
-   }
+        try
+        {
+            this.webappConfigurationClasses = getWebAppConfigurationClasses();
 
-   public void setup(JettyEmbeddedConfiguration containerConfig)
-   {
-      this.containerConfig = containerConfig;
-   }
+            server = new Server();
 
-   public void start() throws LifecycleException
-   {
-      try
-      {
-         // explicit configuration classes, as they have changed between jetty7 minor versions
-         String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
-         if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0)
-         {
-            this.configurationClasses = configuredConfigurationClasses.split(",");
-         }
-         else if (containerConfig.isJettyPlus())
-         {
-            if(VersionUtil.isGraterThenOrEqual(Server.getVersion(), "7.2"))
+            // Setup connector
+            Connector connector = new SelectChannelConnector();
+            connector.setHost(containerConfig.getBindAddress());
+            connector.setPort(containerConfig.getBindHttpPort());
+            server.setConnectors(new Connector[] { connector });
+
+            // Setup standard handler tree
+            contexts = new ContextHandlerCollection();
+            HandlerCollection handlers = new HandlerCollection();
+            handlers.addHandler(contexts);
+            handlers.addHandler(new DefaultHandler());
+            server.setHandler(handlers);
+
+            // Start Server
+            log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
+            server.start();
+
+            // Gather actual address:port in use (post-start)
+            listeningHost = containerConfig.getBindAddress();
+            if (connector.getHost() != null)
             {
-               configurationClasses = JETTY_PLUS_CONFIGURATION_CLASSES;
+                listeningHost = connector.getHost();
+            }
+            listeningPort = connector.getLocalPort();
+        }
+        catch (Exception e)
+        {
+            throw new LifecycleException("Could not start container",e);
+        }
+    }
+
+    @Override
+    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
+    {
+        try
+        {
+            WebAppContext wctx = archive.as(ShrinkWrapWebAppContext.class);
+
+            if (webappConfigurationClasses != null)
+            {
+                wctx.setConfigurationClasses(webappConfigurationClasses);
+            }
+
+            // possible configuration parameters
+            wctx.setExtractWAR(true);
+            wctx.setLogUrlOnStart(true);
+
+            /*
+             * ARQ-242 Without this set we result in failure on loading Configuration in container. ServiceLoader finds service file from AppClassLoader, tried
+             * to load JettyContainerConfiguration from AppClassLoader as a ContainerConfiguration from WebAppClassContext. ClassCastException.
+             */
+            wctx.setParentLoaderPriority(true);
+
+            contexts.addHandler(wctx);
+            wctx.start();
+            webAppContextProducer.set(wctx);
+
+            HTTPContext httpContext = new HTTPContext(listeningHost,listeningPort);
+            for (ServletHolder servlet : wctx.getServletHandler().getServlets())
+            {
+                httpContext.add(new Servlet(servlet.getName(),servlet.getContextPath()));
+            }
+
+            return new ProtocolMetaData().addContext(httpContext);
+
+        }
+        catch (Exception e)
+        {
+            throw new DeploymentException("Could not deploy " + archive.getName(),e);
+        }
+    }
+
+    private String[] getWebAppConfigurationClasses()
+    {
+        // If user has specified in Container Configuration, use it.
+        String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
+        if ((configuredConfigurationClasses != null) && (configuredConfigurationClasses.trim().length() > 0))
+        {
+            return configuredConfigurationClasses.split(",");
+        }
+
+        // If user has specified plus, use it.
+        if (containerConfig.isJettyPlus())
+        {
+            List<String> configs = new ArrayList<String>();
+
+            //
+            configs.add("org.eclipse.jetty.webapp.WebInfConfiguration");
+            configs.add("org.eclipse.jetty.webapp.WebXmlConfiguration");
+            configs.add("org.eclipse.jetty.webapp.MetaInfConfiguration");
+            configs.add("org.eclipse.jetty.webapp.FragmentConfiguration");
+            configs.add("org.eclipse.jetty.plus.webapp.EnvConfiguration");
+            if (EnvUtil.classExists("org.eclipse.jetty.plus.webapp.PlusConfiguration"))
+            {
+                configs.add("org.eclipse.jetty.plus.webapp.PlusConfiguration");
             }
             else
             {
-               configurationClasses = JETTY_PLUS_PRE_7_2_CONFIGURATION_CLASSES;
+                log.warning("Using Jetty 7 buggy plus configuration");
+                configs.add("org.eclipse.jetty.plus.webapp.Configuration");
             }
-         }
 
-         server = new Server();
-         Connector connector = new SelectChannelConnector();
-         connector.setHost(containerConfig.getBindAddress());
-         connector.setPort(containerConfig.getBindHttpPort());
-         server.setConnectors(new Connector[] { connector });
-         server.setHandler(new HandlerCollection(true));
-         log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
-         server.start();
-      }
-      catch (Exception e)
-      {
-         throw new LifecycleException("Could not start container", e);
-      }
-   }
+            if (containerConfig.isJettyAnnotations())
+            {
+                if (EnvUtil.classExists("org.eclipse.jetty.plus.annotations.AnnotationConfiguration"))
+                {
+                    configs.add("org.eclipse.jetty.plus.annotations.AnnotationConfiguration");
+                }
+                else
+                {
+                    log.warning(containerConfig.getClass().getName() + ".isJettyAnnotations == true, but jetty-annotations.jar not in classpath");
+                }
+            }
 
-   public void stop() throws LifecycleException
-   {
-      try
-      {
-         log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
-         server.stop();
-      }
-      catch (Exception e)
-      {
-         throw new LifecycleException("Could not stop container", e);
-      }
-   }
+            configs.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-    */
-   public void deploy(Descriptor descriptor) throws DeploymentException
-   {
-      throw new UnsupportedOperationException("Not implemented");
-   }
+            if (EnvUtil.classExists("org.eclipse.jetty.webapp.TagLibConfiguration"))
+            {
+                configs.add("org.eclipse.jetty.webapp.TagLibConfiguration");
+            }
 
-   /* (non-Javadoc)
-    * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-    */
-   public void undeploy(Descriptor descriptor) throws DeploymentException
-   {
-      throw new UnsupportedOperationException("Not implemented");
-   }
+            String classes[] = configs.toArray(new String[configs.size()]);
+            return classes;
+        }
 
-   public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
-   {
-      try
-      {
-         WebAppContext wctx = archive.as(ShrinkWrapWebAppContext.class);
+        // Otherwise use default
+        return null;
+    }
 
-         if(configurationClasses != null)
-         {
-            wctx.setConfigurationClasses(configurationClasses);
-         }
+    @Override
+    public void stop() throws LifecycleException
+    {
+        try
+        {
+            log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
+            server.stop();
+        }
+        catch (Exception e)
+        {
+            throw new LifecycleException("Could not stop container",e);
+        }
+    }
 
-         // possible configuration parameters
-         wctx.setExtractWAR(true);
-         wctx.setLogUrlOnStart(true);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     */
+    @Override
+    public void deploy(Descriptor descriptor) throws DeploymentException
+    {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-         /*
-          * ARQ-242 Without this set we result in failure on loading Configuration in container.
-          * ServiceLoader finds service file from AppClassLoader, tried to load JettyContainerConfiguration from AppClassLoader
-          * as a ContainerConfiguration from WebAppClassContext. ClassCastException.
-          */
-         wctx.setParentLoaderPriority(true);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
+     */
+    @Override
+    public void undeploy(Descriptor descriptor) throws DeploymentException
+    {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-         ((HandlerCollection) server.getHandler()).addHandler(wctx);
-         wctx.start();
-         webAppContextProducer.set(wctx);
-
-         HTTPContext httpContext = new HTTPContext(containerConfig.getBindAddress(), containerConfig.getBindHttpPort());
-         for(ServletHolder servlet : wctx.getServletHandler().getServlets())
-         {
-            httpContext.add(new Servlet(servlet.getName(), servlet.getContextPath()));
-         }
-
-         return new ProtocolMetaData()
-            .addContext(httpContext);
-
-      }
-      catch (Exception e)
-      {
-         throw new DeploymentException("Could not deploy " + archive.getName(), e);
-      }
-   }
-
-   public void undeploy(Archive<?> archive) throws DeploymentException
-   {
-      WebAppContext wctx = webAppContextProducer.get();
-      if (wctx != null)
-      {
-         try
-         {
-            wctx.stop();
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-            log.severe("Could not stop context " + wctx.getContextPath() + ": " + e.getMessage());
-         }
-         ((HandlerCollection) server.getHandler()).removeHandler(wctx);
-      }
-   }
-
+    @Override
+    public void undeploy(Archive<?> archive) throws DeploymentException
+    {
+        WebAppContext wctx = webAppContextProducer.get();
+        if (wctx != null)
+        {
+            try
+            {
+                wctx.stop();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                log.severe("Could not stop context " + wctx.getContextPath() + ": " + e.getMessage());
+            }
+            contexts.removeHandler(wctx);
+        }
+    }
 }

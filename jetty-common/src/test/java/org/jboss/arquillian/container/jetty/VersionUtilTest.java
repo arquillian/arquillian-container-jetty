@@ -77,7 +77,7 @@ public class VersionUtilTest
       Version greater = VersionUtil.extract("7.1");
       Version then = VersionUtil.extract("7.1");
 
-      Assert.assertTrue(VersionUtil.isGraterThenOrEqual(greater, then));
+      Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
    }
 
    @Test
@@ -86,7 +86,7 @@ public class VersionUtilTest
       Version greater = VersionUtil.extract("7.2");
       Version then = VersionUtil.extract("7.1");
 
-      Assert.assertTrue(VersionUtil.isGraterThenOrEqual(greater, then));
+      Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
    }
 
    @Test
