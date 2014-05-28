@@ -33,5 +33,4 @@ public class JettyExtension implements LoadableExtension
    {
       builder.service(DeployableContainer.class, JettyEmbeddedContainer.class);
    }
-
 }
