@@ -16,10 +16,8 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_7;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
+import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -43,6 +41,13 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.jboss.shrinkwrap.jetty_7.api.ShrinkWrapWebAppContext;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -131,7 +136,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server = new Server();
 
             // Setup connector
-            Connector connector = new SelectChannelConnector();
+            SelectChannelConnector connector = new SelectChannelConnector();
+            if(this.containerConfig.isHeaderBufferSizeSet()) {
+                connector.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+                connector.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
+            }
             connector.setHost(containerConfig.getBindAddress());
             connector.setPort(containerConfig.getBindHttpPort());
             server.setConnectors(new Connector[] { connector });
@@ -142,6 +151,13 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             handlers.addHandler(contexts);
             handlers.addHandler(new DefaultHandler());
             server.setHandler(handlers);
+
+            if(containerConfig.isRealmPropertiesFileSet())
+            {
+                String realmName = getRealmName();
+                HashLoginService hashUserRealm = new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
+                server.addBean(hashUserRealm);
+            }
 
             // Start Server
             log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
@@ -161,6 +177,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         }
     }
 
+    private String getRealmName() {
+        File realmProperties = containerConfig.getRealmProperties();
+        String fileName = realmProperties.getName();
+        int index = -1;
+        if((index = fileName.indexOf('.')) > -1)
+        {
+            fileName = fileName.substring(0, index);
+        }
+        return fileName;
+    }
+
     @Override
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
     {
@@ -172,7 +199,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             {
                 wctx.setConfigurationClasses(webappConfigurationClasses);
             }
-
+            if (containerConfig.areMimeTypesSet())
+            {
+                MimeTypes mimeTypes = getMimeTypes();
+                wctx.setMimeTypes(mimeTypes);
+            }
             // possible configuration parameters
             wctx.setExtractWAR(true);
             wctx.setLogUrlOnStart(true);
@@ -200,6 +231,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         {
             throw new DeploymentException("Could not deploy " + archive.getName(),e);
         }
+    }
+
+    private MimeTypes getMimeTypes() {
+        Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
+        Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
+        MimeTypes mimeTypes = new MimeTypes();
+        for(Map.Entry<String, String> entry : entries)
+        {
+            mimeTypes.addMimeMapping(entry.getKey(), entry.getValue());
+        }
+        return mimeTypes;
     }
 
     private String[] getWebAppConfigurationClasses()
