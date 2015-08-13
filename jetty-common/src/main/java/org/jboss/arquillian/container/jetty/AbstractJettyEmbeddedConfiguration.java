@@ -19,11 +19,16 @@ package org.jboss.arquillian.container.jetty;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded containers
  * 
  * @author Dan Allen
  * @author Ales Justin
+ * @author Alex Soto
  * @version $Revision: $
  */
 public abstract class AbstractJettyEmbeddedConfiguration implements ContainerConfiguration
@@ -31,6 +36,12 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     private String bindAddress = "localhost";
 
     private int bindHttpPort = 9090;
+
+    private Map<String, String> mimeTypes;
+
+    private int headerBufferSize = 0;
+
+    private File realmProperties;
 
     /**
      * List of server configuration classes that can be used for
@@ -45,6 +56,14 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
      */
     public void validate() throws ConfigurationException
     {
+        if(this.realmProperties != null) {
+            if(!this.realmProperties.exists()) {
+                throw new ConfigurationException(String.format("Realm properties file %s must exists.", this.realmProperties.getAbsolutePath()));
+            }
+            if(this.realmProperties.isDirectory()) {
+                throw new ConfigurationException("Realm Properties should be a file and not a directory");
+            }
+        }
     }
 
     public int getBindHttpPort()
@@ -79,5 +98,55 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     public void setConfigurationClasses(String configurationClasses)
     {
         this.configurationClasses = configurationClasses;
+    }
+
+    public int getHeaderBufferSize()
+    {
+        return this.headerBufferSize;
+    }
+
+    public boolean isHeaderBufferSizeSet() {
+        return this.headerBufferSize > 0;
+    }
+
+    public void setHeaderBufferSize(int headerBufferSize)
+    {
+        this.headerBufferSize = headerBufferSize;
+    }
+
+    public void setRealmProperties(String realmProperties)
+    {
+        this.realmProperties = new File(realmProperties);
+    }
+
+    public boolean isRealmPropertiesFileSet()
+    {
+        return this.realmProperties != null;
+    }
+
+    public File getRealmProperties()
+    {
+        return realmProperties;
+    }
+
+    public void setMimeTypes(String mimeTypes) {
+        this.mimeTypes = new HashMap<String, String>();
+        String[] splittedLines = mimeTypes.split(" ");
+        for(int i = 0; i < splittedLines.length; i+=2)
+        {
+            if(i+1 >= splittedLines.length)
+            {
+                throw new ConfigurationException(String.format("Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.", mimeTypes));
+            }
+            this.mimeTypes.put(splittedLines[i], splittedLines[i+1]);
+        }
+    }
+
+    public boolean areMimeTypesSet() {
+        return this.mimeTypes != null;
+    }
+
+    public Map<String, String> getMimeTypes() {
+        return mimeTypes;
     }
 }

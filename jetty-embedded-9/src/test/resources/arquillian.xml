@@ -10,6 +10,11 @@
     <container qualifier="jetty" default="true">
         <configuration>
             <property name="bindHttpPort">9595</property>
+            <property name="realmProperties">src/test/resources/default.properties</property>
+            <property name="mimeTypes">
+                js application/js
+                txt text/plain
+            </property>
         </configuration>
     </container>
 </arquillian>

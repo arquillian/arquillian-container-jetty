@@ -16,6 +16,9 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_6_1;
 
+import java.io.File;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jboss.arquillian.container.jetty.EnvUtil;
@@ -34,10 +37,12 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.jboss.shrinkwrap.jetty_6.api.ShrinkWrapWebAppContext;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.MimeTypes;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
 
@@ -133,6 +138,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             
             // Setup connector
             Connector connector = new SelectChannelConnector();
+            if(this.containerConfig.isHeaderBufferSizeSet()) {
+                connector.setHeaderBufferSize(containerConfig.getHeaderBufferSize());
+            }
+
             connector.setHost(containerConfig.getBindAddress());
             connector.setPort(containerConfig.getBindHttpPort());
             server.setConnectors(new Connector[] { connector });
@@ -144,7 +153,13 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                     new DefaultHandler()
             };
             server.setHandlers(handlers);
-            
+
+            if(containerConfig.isRealmPropertiesFileSet())
+            {
+                String realmName = getRealmName();
+                HashUserRealm hashUserRealm = new HashUserRealm(realmName, containerConfig.getRealmProperties().getAbsolutePath());
+                server.addUserRealm(hashUserRealm);
+            }
             // Start Server
             server.start();
             
@@ -164,6 +179,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         {
             throw new LifecycleException("Could not start container",e);
         }
+    }
+
+    private String getRealmName() {
+        File realmProperties = containerConfig.getRealmProperties();
+        String fileName = realmProperties.getName();
+        int index = -1;
+        if((index = fileName.indexOf('.')) > -1)
+        {
+            fileName = fileName.substring(0, index);
+        }
+        return fileName;
     }
 
     private String[] getWebAppConfigurationClasses()
@@ -226,6 +252,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             {
                 wctx.setConfigurationClasses(webappConfigurationClasses);
             }
+            if (containerConfig.areMimeTypesSet())
+            {
+                MimeTypes mimeTypes = getMimeTypes();
+                wctx.setMimeTypes(mimeTypes);
+            }
             // possible configuration parameters
             wctx.setExtractWAR(true);
             wctx.setLogUrlOnStart(true);
@@ -252,6 +283,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         {
             throw new DeploymentException("Could not deploy " + archive.getName(),e);
         }
+    }
+
+    private MimeTypes getMimeTypes() {
+        Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
+        Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
+        MimeTypes mimeTypes = new MimeTypes();
+        for(Map.Entry<String, String> entry : entries)
+        {
+            mimeTypes.addMimeMapping(entry.getKey(), entry.getValue());
+        }
+        return mimeTypes;
     }
 
     public void undeploy(final Archive<?> archive) throws DeploymentException

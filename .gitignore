@@ -8,6 +8,7 @@
 *.ipr
 *.iws
 .idea
+.DS_Store
 
 # Maven
 target/
