@@ -32,6 +32,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.servlet.ServletContext;
+
 /**
  * Client test case for the Jetty Embedded 7 container
  *
@@ -61,6 +63,9 @@ public class JettyEmbeddedClientTestCase
               .exportAsString()));
    }
 
+    @ArquillianResource
+    ServletContext servletContext;
+
    @Test
    public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception
    {
@@ -72,7 +77,13 @@ public class JettyEmbeddedClientTestCase
             MyServlet.MESSAGE,
             body);
    }
-   
+
+   @Test
+   public void shouldEnrichTestWithServletContext()
+   {
+       Assert.assertNotNull(servletContext);
+   }
+
    private String readAllAndClose(InputStream is) throws Exception 
    {
       ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -31,6 +31,7 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaD
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
@@ -45,6 +46,8 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.webapp.WebAppContext;
+
+import javax.servlet.ServletContext;
 
 /**
  * <p>
@@ -105,6 +108,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     @Inject
     @DeploymentScoped
     private InstanceProducer<WebAppContext> webAppContextProducer;
+
+    @Inject
+    @ApplicationScoped
+    private InstanceProducer<ServletContext> servletContextInstanceProducer;
 
     public JettyEmbeddedContainer()
     {
@@ -270,6 +277,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             contexts.addHandler(wctx);
             wctx.start();
             webAppContextProducer.set(wctx);
+            servletContextInstanceProducer.set(wctx.getServletContext());
 
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             for (ServletHolder servlet : wctx.getServletHandler().getServlets())
