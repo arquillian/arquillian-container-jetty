@@ -137,7 +137,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         try
         {
             server = new Server();
-
             // Use default configuration classes at the server level
             ClassList serverConf = ClassList.setServerDefault(server);
 
