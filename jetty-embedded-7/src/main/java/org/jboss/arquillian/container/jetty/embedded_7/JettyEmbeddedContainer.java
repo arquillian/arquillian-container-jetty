@@ -94,7 +94,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     private InstanceProducer<WebAppContext> webAppContextProducer;
 
     @Inject
-    @ApplicationScoped
+    @DeploymentScoped
     private InstanceProducer<ServletContext> servletContextInstanceProducer;
 
     public JettyEmbeddedContainer()
