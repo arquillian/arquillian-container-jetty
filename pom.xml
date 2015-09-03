@@ -30,7 +30,8 @@
     <properties>
 
         <!-- Versioning -->
-        <version.arquillian_core>1.1.8.Final</version.arquillian_core>
+        <version.arquillian_core>1.1.9.Final</version.arquillian_core>
+
         <version.shrinkwrap>2.1.0</version.shrinkwrap>
 
         <version.weld>1.1.13.Final</version.weld>

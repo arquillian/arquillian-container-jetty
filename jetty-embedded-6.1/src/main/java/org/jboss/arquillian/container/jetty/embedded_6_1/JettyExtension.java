@@ -17,7 +17,6 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_6_1;
 
-import org.jboss.arquillian.container.jetty.ServletContextResourceProvider;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
@@ -33,7 +32,6 @@ public class JettyExtension implements LoadableExtension
    public void register(ExtensionBuilder builder)
    {
       builder.service(DeployableContainer.class, JettyEmbeddedContainer.class);
-      builder.service(ResourceProvider.class, ServletContextResourceProvider.class);
    }
 
 }
