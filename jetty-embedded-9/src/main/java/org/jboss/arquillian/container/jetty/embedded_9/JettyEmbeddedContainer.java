@@ -344,5 +344,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         {
             deployer.requestAppGoal(app,AppLifeCycle.UNDEPLOYED);
         }
+        appProvider.cleanup();
     }
 }
