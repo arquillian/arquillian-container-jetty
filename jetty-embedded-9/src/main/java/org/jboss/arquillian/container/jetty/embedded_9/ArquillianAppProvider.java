@@ -1,7 +1,6 @@
 package org.jboss.arquillian.container.jetty.embedded_9;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -26,14 +25,11 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
     private static final Logger LOG = Logger.getLogger(ArquillianAppProvider.class.getName());
 
     /**
-     * The prefix assigned to the temporary file where the archive is exported
-     */
-    private static final String EXPORT_FILE_PREFIX = "export";
-
-    /**
      * Directory into which we'll extract export the war files
      */
     private static final File EXPORT_DIR;
+
+    private File archiveFile;
 
     static
     {
@@ -117,26 +113,16 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         }
         name = name.substring(0,extOff);
 
-        final File exported;
-        try
-        {
-            // If this method returns successfully then it is guaranteed that:
-            // 1. The file denoted by the returned abstract pathname did not exist before this method was invoked, and
-            // 2. Neither this method nor any of its variants will return the same abstract pathname again in the current invocation of the virtual machine.
-            exported = File.createTempFile(EXPORT_FILE_PREFIX,archive.getName(),EXPORT_DIR);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("Could not create temporary File in " + EXPORT_DIR + " to write exported archive",e);
-        }
+        archiveFile = new File(EXPORT_DIR + File.separator + archive.getName());
+
         // We are overwriting the temporary file placeholder reserved by File#createTemplateFile()
-        archive.as(ZipExporter.class).exportTo(exported,true);
+        archive.as(ZipExporter.class).exportTo(archiveFile,true);
 
         // Mark to delete when we come down
         // exported.deleteOnExit();
 
         // Add the context
-        URI uri = exported.toURI();
+        URI uri = archiveFile.toURI();
         LOG.info("Webapp archive location: " + uri.toASCIIString());
 
         return new App(deploymentManager,this,uri.toASCIIString());
@@ -218,5 +204,10 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
     public void setDeploymentManager(DeploymentManager deploymentManager)
     {
         this.deploymentManager = deploymentManager;
+    }
+
+    public void cleanup()
+    {
+        archiveFile.delete();
     }
 }
