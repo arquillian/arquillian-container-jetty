@@ -21,8 +21,7 @@ import org.jboss.arquillian.container.jetty.embedded_9.JettyEmbeddedConfiguratio
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
-public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvider
-{
+public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvider {
     private static final Logger LOG = Logger.getLogger(ArquillianAppProvider.class.getName());
 
     /**
@@ -35,8 +34,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
      */
     private static final File EXPORT_DIR;
 
-    static
-    {
+    static {
         /*
          * Use of java.io.tmpdir Should be a last-resort fallback for temp directory.
          * 
@@ -44,52 +42,41 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
          * 
          * Use of java.io.tmpdir on Unix systems is unreliable (due to common /tmp dir cleanup processes)
          */
-        File systemDefaultTmpDir = new File(AccessController.doPrivileged(new PrivilegedAction<String>()
-        {
+        File systemDefaultTmpDir = new File(AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
-            public String run()
-            {
+            public String run() {
                 return System.getProperty("java.io.tmpdir");
             }
         }));
 
         // If running under maven + surefire, use information provided by surefire.
-        String baseDirVal = AccessController.doPrivileged(new PrivilegedAction<String>()
-        {
+        String baseDirVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
-            public String run()
-            {
+            public String run() {
                 return System.getProperty("basedir");
             }
         });
 
         File mavenTmpDir = null;
-        if (baseDirVal != null)
-        {
+        if (baseDirVal != null) {
             File baseDir = new File(baseDirVal);
-            if (baseDir.exists() && baseDir.isDirectory())
-            {
-                File targetDir = new File(baseDir,"target");
-                if (targetDir.exists() && targetDir.isDirectory())
-                {
-                    mavenTmpDir = new File(targetDir,"arquillian-jetty-temp");
+            if (baseDir.exists() && baseDir.isDirectory()) {
+                File targetDir = new File(baseDir, "target");
+                if (targetDir.exists() && targetDir.isDirectory()) {
+                    mavenTmpDir = new File(targetDir, "arquillian-jetty-temp");
                     mavenTmpDir.mkdirs();
                 }
             }
         }
 
-        if ((mavenTmpDir != null) && mavenTmpDir.exists() && mavenTmpDir.isDirectory())
-        {
+        if ((mavenTmpDir != null) && mavenTmpDir.exists() && mavenTmpDir.isDirectory()) {
             EXPORT_DIR = mavenTmpDir;
-        }
-        else
-        {
+        } else {
             EXPORT_DIR = systemDefaultTmpDir;
         }
 
         // If the temp location doesn't exist or isn't a directory
-        if (!EXPORT_DIR.exists() || !EXPORT_DIR.isDirectory())
-        {
+        if (!EXPORT_DIR.exists() || !EXPORT_DIR.isDirectory()) {
             throw new IllegalStateException("Could not obtain export directory \"" + EXPORT_DIR.getAbsolutePath() + "\"");
         }
     }
@@ -97,40 +84,34 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
     private final JettyEmbeddedConfiguration config;
     private DeploymentManager deploymentManager;
 
-    public ArquillianAppProvider(JettyEmbeddedConfiguration config)
-    {
+    public ArquillianAppProvider(JettyEmbeddedConfiguration config) {
         this.config = config;
     }
 
-    protected App createApp(final Archive<?> archive)
-    {
+    protected App createApp(final Archive<?> archive) {
         String name = archive.getName();
         int extOff = name.lastIndexOf('.');
-        if (extOff <= 0)
-        {
+        if (extOff <= 0) {
             throw new RuntimeException("Not a valid Web Archive filename: " + name);
         }
         String ext = name.substring(extOff).toLowerCase();
-        if (!ext.equals(".war"))
-        {
+        if (!ext.equals(".war")) {
             throw new RuntimeException("Not a recognized Web Archive: " + name);
         }
-        name = name.substring(0,extOff);
+        name = name.substring(0, extOff);
 
         final File exported;
-        try
-        {
+        try {
             // If this method returns successfully then it is guaranteed that:
             // 1. The file denoted by the returned abstract pathname did not exist before this method was invoked, and
             // 2. Neither this method nor any of its variants will return the same abstract pathname again in the current invocation of the virtual machine.
-            exported = File.createTempFile(EXPORT_FILE_PREFIX,archive.getName(),EXPORT_DIR);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("Could not create temporary File in " + EXPORT_DIR + " to write exported archive",e);
+            exported = File.createTempFile(EXPORT_FILE_PREFIX, archive.getName(), EXPORT_DIR);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create temporary File in " + EXPORT_DIR + " to write exported archive",
+                e);
         }
         // We are overwriting the temporary file placeholder reserved by File#createTemplateFile()
-        archive.as(ZipExporter.class).exportTo(exported,true);
+        archive.as(ZipExporter.class).exportTo(exported, true);
 
         // Mark to delete when we come down
         // exported.deleteOnExit();
@@ -139,12 +120,11 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         URI uri = exported.toURI();
         LOG.info("Webapp archive location: " + uri.toASCIIString());
 
-        return new App(deploymentManager,this,uri.toASCIIString());
+        return new App(deploymentManager, this, uri.toASCIIString());
     }
 
     @Override
-    public ContextHandler createContextHandler(final App app) throws Exception
-    {
+    public ContextHandler createContextHandler(final App app) throws Exception {
         Resource resource = Resource.newResource(app.getOriginId());
         File file = resource.getFile();
         if (!resource.exists())
@@ -152,20 +132,16 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
         String context = file.getName();
 
-        if (FileID.isWebArchiveFile(file))
-        {
+        if (FileID.isWebArchiveFile(file)) {
             // Context Path is the same as the archive.
-            context = context.substring(0,context.length() - 4);
-        }
-        else
-        {
+            context = context.substring(0, context.length() - 4);
+        } else {
             throw new IllegalStateException("unable to create ContextHandler for " + app);
         }
 
         // Ensure "/" is Not Trailing in context paths.
-        if (context.endsWith("/") && context.length() > 0)
-        {
-            context = context.substring(0,context.length() - 1);
+        if (context.endsWith("/") && context.length() > 0) {
+            context = context.substring(0, context.length() - 1);
         }
 
         // Start building the webapplication
@@ -174,49 +150,42 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         webAppContext.setLogUrlOnStart(true);
 
         // special case of archive (or dir) named "root" is / context
-        if (context.equalsIgnoreCase("root"))
-        {
+        if (context.equalsIgnoreCase("root")) {
             context = URIUtil.SLASH;
-        }
-        else if (context.toLowerCase(Locale.ENGLISH).startsWith("root-"))
-        {
+        } else if (context.toLowerCase(Locale.ENGLISH).startsWith("root-")) {
             int dash = context.toLowerCase(Locale.ENGLISH).indexOf('-');
             String virtual = context.substring(dash + 1);
-            webAppContext.setVirtualHosts(new String[] { virtual });
+            webAppContext.setVirtualHosts(new String[] {virtual});
             context = URIUtil.SLASH;
         }
 
         // Ensure "/" is Prepended to all context paths.
-        if (context.charAt(0) != '/')
-        {
+        if (context.charAt(0) != '/') {
             context = "/" + context;
         }
 
         webAppContext.setContextPath(context);
         webAppContext.setWar(file.getAbsolutePath());
-        if (config.hasDefaultsDescriptor())
-        {
+        if (config.hasDefaultsDescriptor()) {
             webAppContext.setDefaultsDescriptor(config.getDefaultsDescriptor().toASCIIString());
         }
         webAppContext.setExtractWAR(true);
 
         webAppContext.setParentLoaderPriority(config.getClassloaderBehavior() == ClassLoaderBehavior.JAVA_SPEC);
 
-        if (config.getTempDirectory() != null)
-        {
+        if (config.getTempDirectory() != null) {
             /*
              * Since the Temp Dir is really a context base temp directory, Lets set the Temp Directory in a way similar to how WebInfConfiguration does it,
              * instead of setting the WebAppContext.setTempDirectory(File). If we used .setTempDirectory(File) all webapps will wind up in the same temp / work
              * directory, overwriting each others work.
              */
-            webAppContext.setAttribute(WebAppContext.BASETEMPDIR,config.getTempDirectory());
+            webAppContext.setAttribute(WebAppContext.BASETEMPDIR, config.getTempDirectory());
         }
         return webAppContext;
     }
 
     @Override
-    public void setDeploymentManager(DeploymentManager deploymentManager)
-    {
+    public void setDeploymentManager(DeploymentManager deploymentManager) {
         this.deploymentManager = deploymentManager;
     }
 }

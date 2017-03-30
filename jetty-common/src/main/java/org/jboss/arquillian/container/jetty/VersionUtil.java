@@ -17,91 +17,77 @@
  */
 package org.jboss.arquillian.container.jetty;
 
-
 /**
  * VersionUtil
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class VersionUtil
-{
-   private VersionUtil() {}
+public class VersionUtil {
+    private VersionUtil() {
+    }
 
-   public static class Version implements Comparable<Version>
-   {
-      private Integer major;
-      private Integer minor;
+    public static class Version implements Comparable<Version> {
+        private Integer major;
+        private Integer minor;
 
-      public Version(int major, int minor)
-      {
-         this.major = major;
-         this.minor = minor;
-      }
+        public Version(int major, int minor) {
+            this.major = major;
+            this.minor = minor;
+        }
 
-      /**
-       * @return the major
-       */
-      public int getMajor()
-      {
-         return major;
-      }
+        /**
+         * @return the major
+         */
+        public int getMajor() {
+            return major;
+        }
 
-      /**
-       * @return the minor
-       */
-      public int getMinor()
-      {
-         return minor;
-      }
+        /**
+         * @return the minor
+         */
+        public int getMinor() {
+            return minor;
+        }
 
-      /* (non-Javadoc)
-       * @see java.lang.Comparable#compareTo(java.lang.Object)
-       */
-      @Override
-      public int compareTo(Version o)
-      {
-         int majorCompare = major.compareTo(o.major);
-         if(majorCompare == 0)
-         {
-            return minor.compareTo(o.minor);
-         }
-         return majorCompare;
-      }
-   }
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(Version o) {
+            int majorCompare = major.compareTo(o.major);
+            if (majorCompare == 0) {
+                return minor.compareTo(o.minor);
+            }
+            return majorCompare;
+        }
+    }
 
-   private static String expression = "([0-9]{1,5})\\.([0-9]{1,5}).*";
+    private static String expression = "([0-9]{1,5})\\.([0-9]{1,5}).*";
 
-   public static Version extract(String version)
-   {
-      if(version == null || !version.matches(expression))
-      {
-         return new Version(0, 0);
-      }
+    public static Version extract(String version) {
+        if (version == null || !version.matches(expression)) {
+            return new Version(0, 0);
+        }
 
-      return new Version(
+        return new Version(
             Integer.parseInt(version.replaceAll(expression, "$1")),
             Integer.parseInt(version.replaceAll(expression, "$2")));
-   }
+    }
 
-   public static boolean isGreaterThenOrEqual(String greater, String then)
-   {
-      return isGreaterThenOrEqual(extract(greater), extract(then));
-   }
+    public static boolean isGreaterThenOrEqual(String greater, String then) {
+        return isGreaterThenOrEqual(extract(greater), extract(then));
+    }
 
-   public static boolean isGreaterThenOrEqual(Version greater, Version then)
-   {
-      return greater.compareTo(then) >= 0;
-   }
+    public static boolean isGreaterThenOrEqual(Version greater, Version then) {
+        return greater.compareTo(then) >= 0;
+    }
 
-   public static boolean isLessThenOrEqual(String less, String then)
-   {
-      return isLessThenOrEqual(extract(less), extract(then));
-   }
+    public static boolean isLessThenOrEqual(String less, String then) {
+        return isLessThenOrEqual(extract(less), extract(then));
+    }
 
-   public static boolean isLessThenOrEqual(Version less, Version then)
-   {
-      return less.compareTo(then) <= 0;
-   }
-
+    public static boolean isLessThenOrEqual(Version less, Version then) {
+        return less.compareTo(then) <= 0;
+    }
 }

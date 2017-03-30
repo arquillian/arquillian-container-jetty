@@ -21,89 +21,78 @@ import org.jboss.arquillian.container.jetty.VersionUtil.Version;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 /**
  * VersionUtilTestCase
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @version $Revision: $
  */
-public class VersionUtilTest
-{
+public class VersionUtilTest {
 
-   @Test
-   public void shouldBeAbleToExtract() throws Exception
-   {
-      Version version = VersionUtil.extract("1.2");
-      Assert.assertEquals(1, version.getMajor());
-      Assert.assertEquals(2, version.getMinor());
-   }
+    @Test
+    public void shouldBeAbleToExtract() throws Exception {
+        Version version = VersionUtil.extract("1.2");
+        Assert.assertEquals(1, version.getMajor());
+        Assert.assertEquals(2, version.getMinor());
+    }
 
-   @Test
-   public void shouldBeAbleToExtractWithMultipleDigits() throws Exception
-   {
-      Version version = VersionUtil.extract("10.300");
-      Assert.assertEquals(10, version.getMajor());
-      Assert.assertEquals(300, version.getMinor());
-   }
+    @Test
+    public void shouldBeAbleToExtractWithMultipleDigits() throws Exception {
+        Version version = VersionUtil.extract("10.300");
+        Assert.assertEquals(10, version.getMajor());
+        Assert.assertEquals(300, version.getMinor());
+    }
 
-   @Test
-   public void shouldBeAbleToExtractWithBuild() throws Exception
-   {
-      Version version = VersionUtil.extract("1.2.50.A");
-      Assert.assertEquals(1, version.getMajor());
-      Assert.assertEquals(2, version.getMinor());
-   }
+    @Test
+    public void shouldBeAbleToExtractWithBuild() throws Exception {
+        Version version = VersionUtil.extract("1.2.50.A");
+        Assert.assertEquals(1, version.getMajor());
+        Assert.assertEquals(2, version.getMinor());
+    }
 
-   @Test
-   public void shouldReturnZeroVersionOnNull() throws Exception
-   {
-      Version version = VersionUtil.extract(null);
-      Assert.assertEquals(0, version.getMajor());
-      Assert.assertEquals(0, version.getMinor());
-   }
+    @Test
+    public void shouldReturnZeroVersionOnNull() throws Exception {
+        Version version = VersionUtil.extract(null);
+        Assert.assertEquals(0, version.getMajor());
+        Assert.assertEquals(0, version.getMinor());
+    }
 
-   @Test
-   public void shouldReturnZeroVersionOnNullUnMatched() throws Exception
-   {
-      Version version = VersionUtil.extract("243223.A");
-      Assert.assertEquals(0, version.getMajor());
-      Assert.assertEquals(0, version.getMinor());
-   }
+    @Test
+    public void shouldReturnZeroVersionOnNullUnMatched() throws Exception {
+        Version version = VersionUtil.extract("243223.A");
+        Assert.assertEquals(0, version.getMajor());
+        Assert.assertEquals(0, version.getMinor());
+    }
 
-   @Test
-   public void shouldBeGreaterEqual()
-   {
-      Version greater = VersionUtil.extract("7.1");
-      Version then = VersionUtil.extract("7.1");
+    @Test
+    public void shouldBeGreaterEqual() {
+        Version greater = VersionUtil.extract("7.1");
+        Version then = VersionUtil.extract("7.1");
 
-      Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
-   }
+        Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
+    }
 
-   @Test
-   public void shouldBeGreaterThen()
-   {
-      Version greater = VersionUtil.extract("7.2");
-      Version then = VersionUtil.extract("7.1");
+    @Test
+    public void shouldBeGreaterThen() {
+        Version greater = VersionUtil.extract("7.2");
+        Version then = VersionUtil.extract("7.1");
 
-      Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
-   }
+        Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
+    }
 
-   @Test
-   public void shouldBeLessEqual()
-   {
-      Version less = VersionUtil.extract("7.1");
-      Version then = VersionUtil.extract("7.1");
+    @Test
+    public void shouldBeLessEqual() {
+        Version less = VersionUtil.extract("7.1");
+        Version then = VersionUtil.extract("7.1");
 
-      Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
-   }
+        Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
+    }
 
-   @Test
-   public void shouldBeLessThen()
-   {
-      Version less = VersionUtil.extract("7.1");
-      Version then = VersionUtil.extract("7.2");
+    @Test
+    public void shouldBeLessThen() {
+        Version less = VersionUtil.extract("7.1");
+        Version then = VersionUtil.extract("7.2");
 
-      Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
-   }
+        Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
+    }
 }

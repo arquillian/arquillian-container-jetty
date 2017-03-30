@@ -56,29 +56,29 @@ import javax.servlet.ServletContext;
  * <p>
  * Jetty Embedded 7.x and 8.x container for the Arquillian project.
  * </p>
- * 
  * <p>
- * This container only supports a WebArchive deployment. The context path of the deployed application is always set to "/test", which is expected by the
+ * <p>
+ * This container only supports a WebArchive deployment. The context path of the deployed application is always set to
+ * "/test", which is expected by the
  * Arquillian servlet protocol.
  * </p>
- * 
  * <p>
- * Another known issue is that the container configuration process logs an exception when running in-container. However, the container is still configured
+ * <p>
+ * Another known issue is that the container configuration process logs an exception when running in-container. However,
+ * the container is still configured
  * properly during setup.
  * </p>
- * 
+ *
  * @author Dan Allen
  * @author Ales Justin
  * @version $Revision: $
  */
-public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration>
-{
+public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration> {
     public static final String HTTP_PROTOCOL = "http";
 
     private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
 
-    static
-    {
+    static {
         // Make jetty's own logging use java.util.logging
         org.eclipse.jetty.util.log.Log.setLog(new JavaUtilLog());
     }
@@ -98,8 +98,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     @ApplicationScoped
     private InstanceProducer<ServletContext> servletContextInstanceProducer;
 
-    public JettyEmbeddedContainer()
-    {
+    public JettyEmbeddedContainer() {
     }
 
     /*
@@ -108,8 +107,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
      */
     @Override
-    public Class<JettyEmbeddedConfiguration> getConfigurationClass()
-    {
+    public Class<JettyEmbeddedConfiguration> getConfigurationClass() {
         return JettyEmbeddedConfiguration.class;
     }
 
@@ -119,39 +117,35 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
      */
     @Override
-    public ProtocolDescription getDefaultProtocol()
-    {
+    public ProtocolDescription getDefaultProtocol() {
         // Jetty 8.x is Servlet 3.0
         return new ProtocolDescription("Servlet 3.0");
     }
 
     @Override
-    public void setup(JettyEmbeddedConfiguration containerConfig)
-    {
+    public void setup(JettyEmbeddedConfiguration containerConfig) {
         this.containerConfig = containerConfig;
     }
 
     @Override
-    public void start() throws LifecycleException
-    {
-        EnvUtil.assertMinimumJettyVersion(Server.getVersion(),"8.0");
+    public void start() throws LifecycleException {
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "8.0");
 
-        try
-        {
+        try {
             this.configurationClasses = getWebAppConfigurationClasses();
 
             server = new Server();
 
             // Setup connector
             SelectChannelConnector connector = new SelectChannelConnector();
-            if(this.containerConfig.isHeaderBufferSizeSet()) {
+            if (this.containerConfig.isHeaderBufferSizeSet()) {
                 connector.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
                 connector.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
             }
 
             connector.setHost(containerConfig.getBindAddress());
             connector.setPort(containerConfig.getBindHttpPort());
-            server.setConnectors(new Connector[] { connector });
+            server.setConnectors(new Connector[] {connector});
 
             // Setup standard handler tree
             contexts = new ContextHandlerCollection();
@@ -160,10 +154,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             handlers.addHandler(new DefaultHandler());
             server.setHandler(handlers);
 
-            if(containerConfig.isRealmPropertiesFileSet())
-            {
+            if (containerConfig.isRealmPropertiesFileSet()) {
                 String realmName = getRealmName();
-                HashLoginService hashUserRealm = new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
+                HashLoginService hashUserRealm =
+                    new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
                 server.addBean(hashUserRealm);
             }
 
@@ -173,15 +167,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
             // Gather actual address:port in use (post-start)
             listeningHost = containerConfig.getBindAddress();
-            if (connector.getHost() != null)
-            {
+            if (connector.getHost() != null) {
                 listeningHost = connector.getHost();
             }
             listeningPort = connector.getLocalPort();
-        }
-        catch (Exception e)
-        {
-            throw new LifecycleException("Could not start container",e);
+        } catch (Exception e) {
+            throw new LifecycleException("Could not start container", e);
         }
     }
 
@@ -189,25 +180,21 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         File realmProperties = containerConfig.getRealmProperties();
         String fileName = realmProperties.getName();
         int index = -1;
-        if((index = fileName.indexOf('.')) > -1)
-        {
+        if ((index = fileName.indexOf('.')) > -1) {
             fileName = fileName.substring(0, index);
         }
         return fileName;
     }
 
-    private String[] getWebAppConfigurationClasses()
-    {
+    private String[] getWebAppConfigurationClasses() {
         // If user has specified in Container Configuration, use it.
         String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
-        if ((configuredConfigurationClasses != null) && (configuredConfigurationClasses.trim().length() > 0))
-        {
+        if ((configuredConfigurationClasses != null) && (configuredConfigurationClasses.trim().length() > 0)) {
             return configuredConfigurationClasses.split(",");
         }
 
         // If user has specified plus, use it.
-        if (containerConfig.isJettyPlus())
-        {
+        if (containerConfig.isJettyPlus()) {
             List<String> configs = new ArrayList<String>();
 
             //
@@ -218,22 +205,18 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             configs.add("org.eclipse.jetty.plus.webapp.EnvConfiguration");
             configs.add("org.eclipse.jetty.plus.webapp.PlusConfiguration");
 
-            if (containerConfig.isJettyAnnotations())
-            {
-                if (EnvUtil.classExists("org.eclipse.jetty.plus.annotations.AnnotationConfiguration"))
-                {
+            if (containerConfig.isJettyAnnotations()) {
+                if (EnvUtil.classExists("org.eclipse.jetty.plus.annotations.AnnotationConfiguration")) {
                     configs.add("org.eclipse.jetty.plus.annotations.AnnotationConfiguration");
-                }
-                else
-                {
-                    log.warning(containerConfig.getClass().getName() + ".isJettyAnnotations == true, but jetty-annotations.jar not in classpath");
+                } else {
+                    log.warning(containerConfig.getClass().getName()
+                        + ".isJettyAnnotations == true, but jetty-annotations.jar not in classpath");
                 }
             }
 
             configs.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
 
-            if (EnvUtil.classExists("org.eclipse.jetty.webapp.TagLibConfiguration"))
-            {
+            if (EnvUtil.classExists("org.eclipse.jetty.webapp.TagLibConfiguration")) {
                 configs.add("org.eclipse.jetty.webapp.TagLibConfiguration");
             }
 
@@ -246,16 +229,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     @Override
-    public void stop() throws LifecycleException
-    {
-        try
-        {
+    public void stop() throws LifecycleException {
+        try {
             log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
             server.stop();
-        }
-        catch (Exception e)
-        {
-            throw new LifecycleException("Could not stop container",e);
+        } catch (Exception e) {
+            throw new LifecycleException("Could not stop container", e);
         }
     }
 
@@ -265,8 +244,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
      */
     @Override
-    public void deploy(Descriptor descriptor) throws DeploymentException
-    {
+    public void deploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -276,24 +254,19 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
      */
     @Override
-    public void undeploy(Descriptor descriptor) throws DeploymentException
-    {
+    public void undeploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
-    {
-        try
-        {
+    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
+        try {
             WebAppContext wctx = archive.as(ShrinkWrapWebAppContext.class);
 
-            if (configurationClasses != null)
-            {
+            if (configurationClasses != null) {
                 wctx.setConfigurationClasses(configurationClasses);
             }
-            if (containerConfig.areMimeTypesSet())
-            {
+            if (containerConfig.areMimeTypesSet()) {
                 MimeTypes mimeTypes = getMimeTypes();
                 wctx.setMimeTypes(mimeTypes);
             }
@@ -313,18 +286,14 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             webAppContextProducer.set(wctx);
             servletContextInstanceProducer.set(wctx.getServletContext());
 
-            HTTPContext httpContext = new HTTPContext(listeningHost,listeningPort);
-            for (ServletHolder servlet : wctx.getServletHandler().getServlets())
-            {
-                httpContext.add(new Servlet(servlet.getName(),servlet.getContextPath()));
+            HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
+            for (ServletHolder servlet : wctx.getServletHandler().getServlets()) {
+                httpContext.add(new Servlet(servlet.getName(), servlet.getContextPath()));
             }
 
             return new ProtocolMetaData().addContext(httpContext);
-
-        }
-        catch (Exception e)
-        {
-            throw new DeploymentException("Could not deploy " + archive.getName(),e);
+        } catch (Exception e) {
+            throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
     }
 
@@ -332,25 +301,19 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
         Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
         MimeTypes mimeTypes = new MimeTypes();
-        for(Map.Entry<String, String> entry : entries)
-        {
+        for (Map.Entry<String, String> entry : entries) {
             mimeTypes.addMimeMapping(entry.getKey(), entry.getValue());
         }
         return mimeTypes;
     }
 
     @Override
-    public void undeploy(Archive<?> archive) throws DeploymentException
-    {
+    public void undeploy(Archive<?> archive) throws DeploymentException {
         WebAppContext wctx = webAppContextProducer.get();
-        if (wctx != null)
-        {
-            try
-            {
+        if (wctx != null) {
+            try {
                 wctx.stop();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 log.severe("Could not stop context " + wctx.getContextPath() + ": " + e.getMessage());
             }

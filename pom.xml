@@ -1,166 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Parent -->
-    <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>19</version>
-        <relativePath />
-    </parent>
+  <!-- Parent -->
+  <parent>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-parent</artifactId>
+    <version>19</version>
+    <relativePath/>
+  </parent>
 
-    <!-- Model Version -->
-    <modelVersion>4.0.0</modelVersion>
+  <!-- Model Version -->
+  <modelVersion>4.0.0</modelVersion>
 
-    <!-- Artifact Configuration -->
-    <groupId>org.jboss.arquillian.container</groupId>
-    <artifactId>arquillian-parent-jetty</artifactId>
-    <version>1.0.0.Final-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Arquillian Container Parent Jetty</name>
-    <description>Jetty Container integrations for the Arquillian Project</description>
+  <!-- Artifact Configuration -->
+  <groupId>org.jboss.arquillian.container</groupId>
+  <artifactId>arquillian-parent-jetty</artifactId>
+  <version>1.0.0.Final-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Arquillian Container Parent Jetty</name>
+  <description>Jetty Container integrations for the Arquillian Project</description>
 
-    <scm>
-        <connection>scm:git:git://git@github.com:arquillian/arquillian-container-jetty.git</connection>
-        <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-jetty.git</developerConnection>
-        <url>git://github.com/arquillian/arquillian-container-jetty.git</url>
-      <tag>HEAD</tag>
+  <scm>
+    <connection>scm:git:git://git@github.com:arquillian/arquillian-container-jetty.git</connection>
+    <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-jetty.git</developerConnection>
+    <url>git://github.com/arquillian/arquillian-container-jetty.git</url>
+    <tag>HEAD</tag>
   </scm>
 
-    <!-- Properties -->
-    <properties>
+  <!-- Properties -->
+  <properties>
 
-        <!-- Versioning -->
-        <version.arquillian_core>1.1.11.Final</version.arquillian_core>
+    <!-- Versioning -->
+    <version.arquillian_core>1.1.11.Final</version.arquillian_core>
 
-        <version.shrinkwrap>2.1.0</version.shrinkwrap>
+    <version.shrinkwrap>2.1.0</version.shrinkwrap>
 
-        <version.weld>1.1.32.Final</version.weld>
-        <version.cdi-api>1.2</version.cdi-api>
-        <version.glassfish.el>2.2</version.glassfish.el>
-        <version.jsp-api>2.2</version.jsp-api>
-        <version.servlet-api>3.1.0</version.servlet-api>
-        <version.h2>1.2.138</version.h2>
+    <version.weld>1.1.32.Final</version.weld>
+    <version.cdi-api>1.2</version.cdi-api>
+    <version.glassfish.el>2.2</version.glassfish.el>
+    <version.jsp-api>2.2</version.jsp-api>
+    <version.servlet-api>3.1.0</version.servlet-api>
+    <version.h2>1.2.138</version.h2>
 
-        <!-- override from parent -->
-        <maven.compiler.argument.target>1.5</maven.compiler.argument.target>
-        <maven.compiler.argument.source>1.5</maven.compiler.argument.source>
+    <!-- override from parent -->
+    <maven.compiler.argument.target>1.5</maven.compiler.argument.target>
+    <maven.compiler.argument.source>1.5</maven.compiler.argument.source>
 
-    </properties>
+  </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.shrinkwrap.resolver</groupId>
-                <artifactId>shrinkwrap-resolver-bom</artifactId>
-                <version>${version.shrinkwrap}</version>
-                <scope>test</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.shrinkwrap.resolver</groupId>
-                <artifactId>shrinkwrap-resolver-depchain</artifactId>
-                <version>${version.shrinkwrap}</version>
-                <type>pom</type>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${version.arquillian_core}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-build</artifactId>
-                <version>${version.arquillian_core}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.resolver</groupId>
+        <artifactId>shrinkwrap-resolver-bom</artifactId>
+        <version>${version.shrinkwrap}</version>
+        <scope>test</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.resolver</groupId>
+        <artifactId>shrinkwrap-resolver-depchain</artifactId>
+        <version>${version.shrinkwrap}</version>
+        <type>pom</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-bom</artifactId>
+        <version>${version.arquillian_core}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-build</artifactId>
+        <version>${version.arquillian_core}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-            <dependency>
-                <groupId>org.jboss.weld.servlet</groupId>
-                <artifactId>weld-servlet</artifactId>
-                <version>${version.weld}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>${version.cdi-api}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.web</groupId>
-                <artifactId>el-impl</artifactId>
-                <version>${version.glassfish.el}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>jsp-api</artifactId>
-                <version>${version.jsp-api}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>${version.servlet-api}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${version.h2}</version>
-                <scope>test</scope>
-            </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet</artifactId>
+        <version>${version.weld}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>${version.cdi-api}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>el-impl</artifactId>
+        <version>${version.glassfish.el}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>${version.jsp-api}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${version.servlet-api}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${version.h2}</version>
+        <scope>test</scope>
+      </dependency>
 
-        </dependencies>
-    </dependencyManagement>
+    </dependencies>
+  </dependencyManagement>
 
-    <build>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>build-server</id>
+      <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <pushChanges>false</pushChanges>
-                    <localCheckout>true</localCheckout>
-                </configuration>
-            </plugin>
+          <!--
+              surefire default forks the JVM for testing, so we need to pass on the maven.repo.local variable so the MavenResovler used in
+              the test cases can read from the same lcoal repo.
+           -->
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemProperties>
+                <maven.repo.local>${maven.repo.local}</maven.repo.local>
+              </systemProperties>
+            </configuration>
+          </plugin>
         </plugins>
-    </build>
+      </build>
+    </profile>
+  </profiles>
 
-    <profiles>
-        <profile>
-            <id>build-server</id>
-            <build>
-                <plugins>
-                    <!--
-                        surefire default forks the JVM for testing, so we need to pass on the maven.repo.local variable so the MavenResovler used in
-                        the test cases can read from the same lcoal repo.
-                     -->
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemProperties>
-                                <maven.repo.local>${maven.repo.local}</maven.repo.local>
-                            </systemProperties>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <modules>
-        <module>jetty-embedded-6.1</module>
-        <module>jetty-embedded-7</module>
-        <module>jetty-embedded-8</module>
-        <module>jetty-embedded-9</module>
-        <module>jetty-common</module>
-    </modules>
+  <modules>
+    <module>jetty-embedded-6.1</module>
+    <module>jetty-embedded-7</module>
+    <module>jetty-embedded-8</module>
+    <module>jetty-embedded-9</module>
+    <module>jetty-common</module>
+  </modules>
 
 </project>
 

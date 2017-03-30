@@ -19,23 +19,21 @@ package org.jboss.arquillian.container.jetty.embedded_6_1;
 import org.jboss.arquillian.container.jetty.AbstractJettyEmbeddedConfiguration;
 
 /**
- * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty 6.x embedded containers.
- * 
+ * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty 6.x embedded
+ * containers.
+ *
  * @author Dan Allen
  * @author Ales Justin
  * @version $Revision: $
  */
-public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration
-{
+public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration {
     private boolean jettyPlus = true;
 
-    public boolean isJettyPlus()
-    {
+    public boolean isJettyPlus() {
         return jettyPlus;
     }
 
-    public void setJettyPlus(boolean jettyPlus)
-    {
+    public void setJettyPlus(boolean jettyPlus) {
         this.jettyPlus = jettyPlus;
     }
 }

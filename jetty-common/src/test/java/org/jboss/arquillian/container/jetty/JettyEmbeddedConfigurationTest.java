@@ -1,6 +1,5 @@
 package org.jboss.arquillian.container.jetty;
 
-
 import org.junit.Test;
 
 import java.util.Map;
@@ -11,8 +10,8 @@ import static org.junit.Assert.assertThat;
 public class JettyEmbeddedConfigurationTest {
 
     private static final String MIME_DEFINITIONS = "js application/javascript " +
-            "txt text/plain " +
-            "html text/html";
+        "txt text/plain " +
+        "html text/html";
 
     @Test
     public void shouldConfigureMimeTypes() {
@@ -23,5 +22,4 @@ public class JettyEmbeddedConfigurationTest {
         assertThat(mimeTypes.get("txt"), is("text/plain"));
         assertThat(mimeTypes.get("html"), is("text/html"));
     }
-
 }

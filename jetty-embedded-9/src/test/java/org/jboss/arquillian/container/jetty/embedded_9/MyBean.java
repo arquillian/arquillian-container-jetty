@@ -18,13 +18,11 @@ package org.jboss.arquillian.container.jetty.embedded_9;
 
 import javax.annotation.Resource;
 
-public class MyBean
-{
-   @Resource(name = "name")
-   private String name;
+public class MyBean {
+    @Resource(name = "name")
+    private String name;
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 }

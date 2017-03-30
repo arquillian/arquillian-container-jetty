@@ -23,24 +23,25 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.jboss.arquillian.container.jetty.AbstractJettyEmbeddedConfiguration;
 
 /**
- * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty Embedded containers.
- * 
+ * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty Embedded
+ * containers.
+ *
  * @author Dan Allen
  * @author Ales Justin
  * @version $Revision: $
  */
-public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration
-{
+public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration {
     public static enum ClassLoaderBehavior
+
     {
         /**
          * Default behavior for Java Spec (server classloader, then webapp). 
-         * 
+         *
          * Also the default for Arquillian.
          */
         JAVA_SPEC,
-        /** Default behavior for Servlet Spec (webapp classloader, then server) */
-        SERVLET_SPEC
+            /** Default behavior for Servlet Spec (webapp classloader, then server) */
+            SERVLET_SPEC
     }
 
     /**
@@ -54,9 +55,9 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
      * Optional override for the default servlet spec descriptor
      */
     private URI defaultsDescriptor;
-    
+
     /**
-     * Dump, to System.err, the server state tree after the server has successfully started up. 
+     * Dump, to System.err, the server state tree after the server has successfully started up.
      */
     private boolean dumpServerAfterStart = false;
 
@@ -72,74 +73,61 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
      * Default: 30,000ms
      */
     private long idleTimeoutMillis = 30000;
-    
+
     /**
      * Base directory for all temp files that Jetty will manage.
      */
     private File tempDirectory;
 
-    public ClassLoaderBehavior getClassloaderBehavior()
-    {
+    public ClassLoaderBehavior getClassloaderBehavior() {
         return classloaderBehavior;
     }
 
-    public URI getDefaultsDescriptor()
-    {
+    public URI getDefaultsDescriptor() {
         return defaultsDescriptor;
     }
 
-    public HttpConfiguration getHttpConfiguration()
-    {
+    public HttpConfiguration getHttpConfiguration() {
         return httpConfiguration;
     }
 
-    public long getIdleTimeoutMillis()
-    {
+    public long getIdleTimeoutMillis() {
         return idleTimeoutMillis;
     }
 
-    public File getTempDirectory()
-    {
+    public File getTempDirectory() {
         return tempDirectory;
     }
 
-    public boolean hasDefaultsDescriptor()
-    {
+    public boolean hasDefaultsDescriptor() {
         return (defaultsDescriptor != null);
     }
 
-    public boolean isDumpServerAfterStart()
-    {
+    public boolean isDumpServerAfterStart() {
         return dumpServerAfterStart;
     }
 
-    public void setClassloaderBehavior(ClassLoaderBehavior classloaderBehavior)
-    {
+    public void setClassloaderBehavior(ClassLoaderBehavior classloaderBehavior) {
         this.classloaderBehavior = classloaderBehavior;
     }
 
-    public void setDefaultsDescriptor(URI defaultsDescriptor)
-    {
+    public void setDefaultsDescriptor(URI defaultsDescriptor) {
         this.defaultsDescriptor = defaultsDescriptor;
     }
 
-    public void setDumpServerAfterStart(boolean serverDumpAfterStart)
-    {
+    public void setDumpServerAfterStart(boolean serverDumpAfterStart) {
         this.dumpServerAfterStart = serverDumpAfterStart;
     }
 
-    public void setHttpConfiguration(HttpConfiguration httpConfiguration)
-    {
+    public void setHttpConfiguration(HttpConfiguration httpConfiguration) {
         this.httpConfiguration = httpConfiguration;
     }
 
-    public void setIdleTimeoutMillis(long milliseconds)
-    {
+    public void setIdleTimeoutMillis(long milliseconds) {
         this.idleTimeoutMillis = milliseconds;
     }
 
-    public void setTempDirectory(File tempDirectory)
-    {
+    public void setTempDirectory(File tempDirectory) {
         this.tempDirectory = tempDirectory;
     }
 }

@@ -40,73 +40,64 @@ import org.junit.runner.RunWith;
  * @version $Revision: $
  */
 @RunWith(Arquillian.class)
-public class JettyEmbeddedInContainerTestCase
-{
-   /**
-    * Deployment for the test
-    */
-   @Deployment
-   public static WebArchive getTestArchive()
-   {
-      final WebArchive war = ShrinkWrap.create(WebArchive.class)
-         .addClass(MyBean.class)
-         // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
-         //.addClass(JettyEmbeddedConfiguration.class)
+public class JettyEmbeddedInContainerTestCase {
+    /**
+     * Deployment for the test
+     */
+    @Deployment
+    public static WebArchive getTestArchive() {
+        final WebArchive war = ShrinkWrap.create(WebArchive.class)
+            .addClass(MyBean.class)
+            // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
+            //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
-                    Maven.configureResolver()
-                        .workOffline()
-                        .loadPomFromFile("pom.xml")
-                        .resolve("org.jboss.weld.servlet:weld-servlet")
-                        .withTransitivity()
-                        .as(GenericArchive.class))
-         .addAsWebInfResource("jetty-env.xml")
-         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-         .setWebXML("in-container-web.xml");
-      return war;
-   }
+                Maven.configureResolver()
+                    .workOffline()
+                    .loadPomFromFile("pom.xml")
+                    .resolve("org.jboss.weld.servlet:weld-servlet")
+                       .withTransitivity()
+                    .as(GenericArchive.class))
+            .addAsWebInfResource("jetty-env.xml")
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            .setWebXML("in-container-web.xml");
+        return war;
+    }
 
-   // defined in jetty-env.xml, scoped to global
-   @Resource(mappedName = "version") Integer version;
+    // defined in jetty-env.xml, scoped to global
+    @Resource(mappedName = "version") Integer version;
 
-   // defined in web.xml, scoped to webapp (relative to java:comp/env)
-   @Resource(name = "name") String name;
+    // defined in web.xml, scoped to webapp (relative to java:comp/env)
+    @Resource(name = "name") String name;
 
-   // defined in jetty-env.xml, scoped to webapp (relative to java:comp/env)
-   @Resource(name = "type") String containerType;
+    // defined in jetty-env.xml, scoped to webapp (relative to java:comp/env)
+    @Resource(name = "type") String containerType;
 
-   @Resource(name = "jdbc/test") DataSource ds;
+    @Resource(name = "jdbc/test") DataSource ds;
 
-   @Inject MyBean testBean;
+    @Inject MyBean testBean;
 
-   @Test
-   public void shouldBeAbleToInjectMembersIntoTestClass() throws Exception
-   {
-      Assert.assertNotNull(version);
-      Assert.assertEquals(new Integer(6), version);
-      Assert.assertNotNull(name);
-      Assert.assertEquals("Jetty", name);
-      Assert.assertNotNull(containerType);
-      Assert.assertEquals("Embedded", containerType);
-      Assert.assertNotNull(ds);
-      Connection c = null;
-      try
-      {
-         c = ds.getConnection();
-         Assert.assertEquals("H2", c.getMetaData().getDatabaseProductName());
-         c.close();
-      }
-      catch (Exception e)
-      {
-         Assert.fail(e.getMessage());
-      }
-      finally
-      {
-         if (c != null && !c.isClosed())
-         {
+    @Test
+    public void shouldBeAbleToInjectMembersIntoTestClass() throws Exception {
+        Assert.assertNotNull(version);
+        Assert.assertEquals(new Integer(6), version);
+        Assert.assertNotNull(name);
+        Assert.assertEquals("Jetty", name);
+        Assert.assertNotNull(containerType);
+        Assert.assertEquals("Embedded", containerType);
+        Assert.assertNotNull(ds);
+        Connection c = null;
+        try {
+            c = ds.getConnection();
+            Assert.assertEquals("H2", c.getMetaData().getDatabaseProductName());
             c.close();
-         }
-      }
-      Assert.assertNotNull(testBean);
-      Assert.assertEquals("Jetty", testBean.getName());
-   }
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            if (c != null && !c.isClosed()) {
+                c.close();
+            }
+        }
+        Assert.assertNotNull(testBean);
+        Assert.assertEquals("Jetty", testBean.getName());
+    }
 }

@@ -24,15 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded containers
- * 
+ * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded
+ * containers
+ *
  * @author Dan Allen
  * @author Ales Justin
  * @author Alex Soto
  * @version $Revision: $
  */
-public abstract class AbstractJettyEmbeddedConfiguration implements ContainerConfiguration
-{
+public abstract class AbstractJettyEmbeddedConfiguration implements ContainerConfiguration {
     private String bindAddress = "localhost";
 
     private int bindHttpPort = 9090;
@@ -54,54 +54,47 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
      * 
      * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
      */
-    public void validate() throws ConfigurationException
-    {
-        if(this.realmProperties != null) {
-            if(!this.realmProperties.exists()) {
-                throw new ConfigurationException(String.format("Realm properties file %s must exists.", this.realmProperties.getAbsolutePath()));
+    public void validate() throws ConfigurationException {
+        if (this.realmProperties != null) {
+            if (!this.realmProperties.exists()) {
+                throw new ConfigurationException(
+                    String.format("Realm properties file %s must exists.", this.realmProperties.getAbsolutePath()));
             }
-            if(this.realmProperties.isDirectory()) {
+            if (this.realmProperties.isDirectory()) {
                 throw new ConfigurationException("Realm Properties should be a file and not a directory");
             }
         }
     }
 
-    public int getBindHttpPort()
-    {
+    public int getBindHttpPort() {
         return bindHttpPort;
     }
 
-    public void setBindHttpPort(int bindHttpPort)
-    {
+    public void setBindHttpPort(int bindHttpPort) {
         this.bindHttpPort = bindHttpPort;
     }
 
-    public String getBindAddress()
-    {
+    public String getBindAddress() {
         return bindAddress;
     }
 
-    public void setBindAddress(String bindAddress)
-    {
+    public void setBindAddress(String bindAddress) {
         this.bindAddress = bindAddress;
     }
 
-    public String getConfigurationClasses()
-    {
+    public String getConfigurationClasses() {
         return configurationClasses;
     }
 
     /**
      * @param configurationClasses
-     *            A comma separated list of fully qualified configuration classes
+     *     A comma separated list of fully qualified configuration classes
      */
-    public void setConfigurationClasses(String configurationClasses)
-    {
+    public void setConfigurationClasses(String configurationClasses) {
         this.configurationClasses = configurationClasses;
     }
 
-    public int getHeaderBufferSize()
-    {
+    public int getHeaderBufferSize() {
         return this.headerBufferSize;
     }
 
@@ -109,36 +102,32 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
         return this.headerBufferSize > 0;
     }
 
-    public void setHeaderBufferSize(int headerBufferSize)
-    {
+    public void setHeaderBufferSize(int headerBufferSize) {
         this.headerBufferSize = headerBufferSize;
     }
 
-    public void setRealmProperties(String realmProperties)
-    {
+    public void setRealmProperties(String realmProperties) {
         this.realmProperties = new File(realmProperties);
     }
 
-    public boolean isRealmPropertiesFileSet()
-    {
+    public boolean isRealmPropertiesFileSet() {
         return this.realmProperties != null;
     }
 
-    public File getRealmProperties()
-    {
+    public File getRealmProperties() {
         return realmProperties;
     }
 
     public void setMimeTypes(String mimeTypes) {
         this.mimeTypes = new HashMap<String, String>();
         String[] splittedLines = mimeTypes.split(" ");
-        for(int i = 0; i < splittedLines.length; i+=2)
-        {
-            if(i+1 >= splittedLines.length)
-            {
-                throw new ConfigurationException(String.format("Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.", mimeTypes));
+        for (int i = 0; i < splittedLines.length; i += 2) {
+            if (i + 1 >= splittedLines.length) {
+                throw new ConfigurationException(String.format(
+                    "Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.",
+                    mimeTypes));
             }
-            this.mimeTypes.put(splittedLines[i], splittedLines[i+1]);
+            this.mimeTypes.put(splittedLines[i], splittedLines[i + 1]);
         }
     }
 

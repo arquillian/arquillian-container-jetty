@@ -42,63 +42,57 @@ import javax.servlet.ServletContext;
  * @version $Revision: $
  */
 @RunWith(Arquillian.class)
-public class JettyEmbeddedClientTestCase
-{
-   /**
-    * Deployment for the test
-    */
-   @Deployment(testable = false)
-   public static WebArchive getTestArchive()
-   {
-      return ShrinkWrap.create(WebArchive.class, "client-test.war")
-         .addClass(MyServlet.class)
-         .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
-               .version("2.5")
-               .createServlet()
-                  .servletClass(MyServlet.class.getName())
-                  .servletName("MyServlet").up()
-              .createServletMapping()
-                  .servletName("MyServlet")
-                  .urlPattern(MyServlet.URL_PATTERN).up()
-              .exportAsString()));
-   }
+public class JettyEmbeddedClientTestCase {
+    /**
+     * Deployment for the test
+     */
+    @Deployment(testable = false)
+    public static WebArchive getTestArchive() {
+        return ShrinkWrap.create(WebArchive.class, "client-test.war")
+            .addClass(MyServlet.class)
+            .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
+                .version("2.5")
+                .createServlet()
+                    .servletClass(MyServlet.class.getName())
+                    .servletName("MyServlet").up()
+                .createServletMapping()
+                    .servletName("MyServlet")
+                    .urlPattern(MyServlet.URL_PATTERN).up()
+                .exportAsString()));
+    }
 
-   @ArquillianResource
-   ServletContext servletContext;
+    @ArquillianResource
+    ServletContext servletContext;
 
-   @Test
-   public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception
-   {
-      String body = readAllAndClose(
+    @Test
+    public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception {
+        String body = readAllAndClose(
             new URL(url, MyServlet.URL_PATTERN).openStream());
-      
-      Assert.assertEquals(
+
+        Assert.assertEquals(
             "Verify that the servlet was deployed and returns expected result",
             MyServlet.MESSAGE,
             body);
-   }
+    }
 
-   @Test
-   public void shouldEnrichTestWithServletContext()
-   {
-      Assert.assertNotNull(servletContext);
-   }
+    @Test
+    public void shouldEnrichTestWithServletContext() {
+        Assert.assertNotNull(servletContext);
+    }
 
-   private String readAllAndClose(InputStream is) throws Exception 
-   {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      try
-      {
-         int read;
-         while( (read = is.read()) != -1)
-         {
-            out.write(read);
-         }
-      }
-      finally 
-      {
-         try { is.close(); } catch (Exception e) { }
-      }
-      return out.toString();
-   }
+    private String readAllAndClose(InputStream is) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            int read;
+            while ((read = is.read()) != -1) {
+                out.write(read);
+            }
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
+        return out.toString();
+    }
 }

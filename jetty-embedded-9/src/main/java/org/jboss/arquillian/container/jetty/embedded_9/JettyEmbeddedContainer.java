@@ -67,14 +67,16 @@ import javax.servlet.ServletContext;
  * <p>
  * Jetty Embedded 9.x container for the Arquillian project.
  * </p>
- *
  * <p>
- * This container only supports a WebArchive deployment. The context path of the deployed application is always set to "/test", which is expected by the
+ * <p>
+ * This container only supports a WebArchive deployment. The context path of the deployed application is always set to
+ * "/test", which is expected by the
  * Arquillian servlet protocol.
  * </p>
- *
  * <p>
- * Another known issue is that the container configuration process logs an exception when running in-container. However, the container is still configured
+ * <p>
+ * Another known issue is that the container configuration process logs an exception when running in-container. However,
+ * the container is still configured
  * properly during setup.
  * </p>
  *
@@ -83,12 +85,10 @@ import javax.servlet.ServletContext;
  * @author Martin Kouba
  * @version $Revision: $
  */
-public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration>
-{
+public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration> {
     private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
 
-    static
-    {
+    static {
         // Make jetty's own logging use java.util.logging
         org.eclipse.jetty.util.log.Log.setLog(new JavaUtilLog());
     }
@@ -114,8 +114,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * 
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
      */
-    public Class<JettyEmbeddedConfiguration> getConfigurationClass()
-    {
+    public Class<JettyEmbeddedConfiguration> getConfigurationClass() {
         return JettyEmbeddedConfiguration.class;
     }
 
@@ -124,62 +123,53 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * 
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
      */
-    public ProtocolDescription getDefaultProtocol()
-    {
+    public ProtocolDescription getDefaultProtocol() {
         // Jetty 9 is a Servlet 3.1 container.
         // However, Arquillian "Protocol" actuall means "Packaging"
         // TODO: Fix to servlet 3.1 (when available in arquillian)
         return new ProtocolDescription("Servlet 3.0");
     }
 
-    public void setup(JettyEmbeddedConfiguration containerConfig)
-    {
+    public void setup(JettyEmbeddedConfiguration containerConfig) {
         this.containerConfig = containerConfig;
     }
 
-    public void start() throws LifecycleException
-    {
-        EnvUtil.assertMinimumJettyVersion(Server.getVersion(),"9.0");
+    public void start() throws LifecycleException {
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "9.0");
 
-        try
-        {
+        try {
             server = new Server();
 
             // Use default configuration classes at the server level
             ClassList serverConf = ClassList.setServerDefault(server);
 
             String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
-            if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0)
-            {
+            if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
                 // User provided classlist, use it as-is.
                 serverConf.clear();
-                for (String configClass : configuredConfigurationClasses.split(","))
-                {
+                for (String configClass : configuredConfigurationClasses.split(",")) {
                     serverConf.add(configClass);
                 }
-            }
-            else
-            {
+            } else {
                 // Arquillian assumption is that all features of Servlet 3.1 are available.
                 // This means that annotation scanning is enabled by default.
                 // That means jetty-plus is mandatory.
 
                 // Applying equivalent of etc/jetty-annotations.xml
                 serverConf.addBefore(JettyWebXmlConfiguration.class.getName(),
-                        AnnotationConfiguration.class.getName());
+                    AnnotationConfiguration.class.getName());
 
                 // Applying equivalent of etc/jetty-plus.xml
                 serverConf.addAfter(FragmentConfiguration.class.getName()
-                        ,EnvConfiguration.class.getName(),
-                        PlusConfiguration.class.getName());
+                    , EnvConfiguration.class.getName(),
+                    PlusConfiguration.class.getName());
             }
 
             // Setup HTTP Configuration
             HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-            if (httpConfig == null)
-            {
+            if (httpConfig == null) {
                 httpConfig = new HttpConfiguration();
-                if(this.containerConfig.isHeaderBufferSizeSet()) {
+                if (this.containerConfig.isHeaderBufferSizeSet()) {
                     httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
                     httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
                 }
@@ -187,12 +177,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);
             // Setup Connector
-            ServerConnector connector = new ServerConnector(server,connectionFactory);
+            ServerConnector connector = new ServerConnector(server, connectionFactory);
 
             connector.setHost(containerConfig.getBindAddress());
             connector.setPort(containerConfig.getBindHttpPort());
             connector.setIdleTimeout(containerConfig.getIdleTimeoutMillis());
-            server.setConnectors(new Connector[] { connector });
+            server.setConnectors(new Connector[] {connector});
 
             // Handler Tree location for all webapps
             ContextHandlerCollection contexts = new ContextHandlerCollection();
@@ -210,10 +200,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             handlers.addHandler(new DefaultHandler());
             server.setHandler(handlers);
 
-            if(containerConfig.isRealmPropertiesFileSet())
-            {
+            if (containerConfig.isRealmPropertiesFileSet()) {
                 String realmName = getRealmName();
-                HashLoginService hashUserRealm = new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
+                HashLoginService hashUserRealm =
+                    new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
                 server.addBean(hashUserRealm);
             }
 
@@ -222,15 +212,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server.start();
 
             listeningHost = connector.getHost();
-            if (listeningHost == null)
-            {
+            if (listeningHost == null) {
                 listeningHost = containerConfig.getBindAddress();
             }
             listeningPort = connector.getLocalPort();
-        }
-        catch (Exception e)
-        {
-            throw new LifecycleException("Could not start container",e);
+        } catch (Exception e) {
+            throw new LifecycleException("Could not start container", e);
         }
     }
 
@@ -238,23 +225,18 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         File realmProperties = containerConfig.getRealmProperties();
         String fileName = realmProperties.getName();
         int index = -1;
-        if((index = fileName.indexOf('.')) > -1)
-        {
+        if ((index = fileName.indexOf('.')) > -1) {
             fileName = fileName.substring(0, index);
         }
         return fileName;
     }
 
-    public void stop() throws LifecycleException
-    {
-        try
-        {
+    public void stop() throws LifecycleException {
+        try {
             log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
             server.stop();
-        }
-        catch (Exception e)
-        {
-            throw new LifecycleException("Could not stop container",e);
+        } catch (Exception e) {
+            throw new LifecycleException("Could not stop container", e);
         }
     }
 
@@ -263,8 +245,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * 
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
      */
-    public void deploy(Descriptor descriptor) throws DeploymentException
-    {
+    public void deploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -273,54 +254,44 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * 
      * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
      */
-    public void undeploy(Descriptor descriptor) throws DeploymentException
-    {
+    public void undeploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
-    {
-        try
-        {
+    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
+        try {
             App app = appProvider.createApp(archive);
 
             WebAppContext webAppContext = getWebAppContext(app);
 
-            if (containerConfig.areMimeTypesSet())
-            {
+            if (containerConfig.areMimeTypesSet()) {
                 MimeTypes mimeTypes = getMimeTypes();
                 webAppContext.setMimeTypes(mimeTypes);
             }
 
             deployer.addApp(app);
-            deployer.requestAppGoal(app,AppLifeCycle.STARTED);
+            deployer.requestAppGoal(app, AppLifeCycle.STARTED);
 
             webAppContextProducer.set(app);
             servletContextInstanceProducer.set(webAppContext.getServletContext());
 
-            HTTPContext httpContext = new HTTPContext(listeningHost,listeningPort);
+            HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
-            for (ServletHolder servlet : servletHandler.getServlets())
-            {
-                httpContext.add(new Servlet(servlet.getName(),servlet.getContextPath()));
+            for (ServletHolder servlet : servletHandler.getServlets()) {
+                httpContext.add(new Servlet(servlet.getName(), servlet.getContextPath()));
             }
             return new ProtocolMetaData().addContext(httpContext);
-        }
-        catch (Exception e)
-        {
-            throw new DeploymentException("Could not deploy " + archive.getName(),e);
+        } catch (Exception e) {
+            throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
     }
 
     private WebAppContext getWebAppContext(App app) throws Exception {
         ContextHandler handler = app.getContextHandler();
         WebAppContext webAppContext = null;
-        if (handler instanceof WebAppContext)
-        {
-            webAppContext = (WebAppContext)handler;
-        }
-        else
-        {
+        if (handler instanceof WebAppContext) {
+            webAppContext = (WebAppContext) handler;
+        } else {
             throw new DeploymentException("Deployment of raw ContextHandler's not supported by Arquillian");
         }
         return webAppContext;
@@ -330,19 +301,16 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
         Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
         MimeTypes mimeTypes = new MimeTypes();
-        for(Map.Entry<String, String> entry : entries)
-        {
+        for (Map.Entry<String, String> entry : entries) {
             mimeTypes.addMimeMapping(entry.getKey(), entry.getValue());
         }
         return mimeTypes;
     }
 
-    public void undeploy(Archive<?> archive) throws DeploymentException
-    {
+    public void undeploy(Archive<?> archive) throws DeploymentException {
         App app = webAppContextProducer.get();
-        if (app != null)
-        {
-            deployer.requestAppGoal(app,AppLifeCycle.UNDEPLOYED);
+        if (app != null) {
+            deployer.requestAppGoal(app, AppLifeCycle.UNDEPLOYED);
         }
     }
 }

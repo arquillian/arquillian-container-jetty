@@ -18,27 +18,22 @@ package org.jboss.arquillian.container.jetty;
 
 import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 
-public class EnvUtil
-{
-    public static boolean classExists(String className)
-    {
+public class EnvUtil {
+    public static boolean classExists(String className) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Class.forName(className,false,cl);
+        try {
+            Class.forName(className, false, cl);
             return true;
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }
-    
-    public static void assertMinimumJettyVersion(String version, String minimum) throws LifecycleException
-    {
-        if (!VersionUtil.isGreaterThenOrEqual(version,minimum))
-        {
-            throw new LifecycleException("Incompatible Jetty container version on the classpath: [actual:" + version + "], [minimum:" + minimum + "]");
+
+    public static void assertMinimumJettyVersion(String version, String minimum) throws LifecycleException {
+        if (!VersionUtil.isGreaterThenOrEqual(version, minimum)) {
+            throw new LifecycleException("Incompatible Jetty container version on the classpath: "
+                + "[actual:" + version + "], "
+                + "[minimum:" + minimum + "]");
         }
     }
 }

@@ -24,59 +24,47 @@ import org.mortbay.log.Logger;
 /**
  * java.util.logging for Jetty 6.x
  */
-public class JettyUtilLog implements Logger
-{
+public class JettyUtilLog implements Logger {
     private Level configuredLevel;
     private java.util.logging.Logger _logger;
 
-    public JettyUtilLog()
-    {
+    public JettyUtilLog() {
         this("org.mortbay.log");
     }
 
-    public JettyUtilLog(String name)
-    {
+    public JettyUtilLog(String name) {
         _logger = java.util.logging.Logger.getLogger(name);
         configuredLevel = _logger.getLevel();
     }
 
-    public void debug(String msg, Object arg0, Object arg1)
-    {
-        if (_logger.isLoggable(Level.FINE))
-        {
-            _logger.log(Level.FINE,format(msg,new Object[]{arg0,arg1}));
+    public void debug(String msg, Object arg0, Object arg1) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, format(msg, new Object[] {arg0, arg1}));
         }
     }
 
-    public void debug(String msg, Throwable thrown)
-    {
-        _logger.log(Level.FINE,msg,thrown);
+    public void debug(String msg, Throwable thrown) {
+        _logger.log(Level.FINE, msg, thrown);
     }
 
-    private String format(String msg, Object arg0, Object arg1)
-    {
-        return format(msg, new Object[]{arg0,arg1});
+    private String format(String msg, Object arg0, Object arg1) {
+        return format(msg, new Object[] {arg0, arg1});
     }
 
-    private String format(String msg, Object[] args)
-    {
+    private String format(String msg, Object[] args) {
         msg = String.valueOf(msg); // Avoids NPE
         String braces = "{}";
         StringBuilder builder = new StringBuilder();
         int start = 0;
-        for (Object arg : args)
-        {
-            int bracesIndex = msg.indexOf(braces,start);
-            if (bracesIndex < 0)
-            {
+        for (Object arg : args) {
+            int bracesIndex = msg.indexOf(braces, start);
+            if (bracesIndex < 0) {
                 builder.append(msg.substring(start));
                 builder.append(" ");
                 builder.append(arg);
                 start = msg.length();
-            }
-            else
-            {
-                builder.append(msg.substring(start,bracesIndex));
+            } else {
+                builder.append(msg.substring(start, bracesIndex));
                 builder.append(String.valueOf(arg));
                 start = bracesIndex + braces.length();
             }
@@ -85,60 +73,47 @@ public class JettyUtilLog implements Logger
         return builder.toString();
     }
 
-    public Logger getLogger(String name)
-    {
+    public Logger getLogger(String name) {
         return newLogger(name);
     }
 
-    public String getName()
-    {
+    public String getName() {
         return _logger.getName();
     }
 
-    public void info(String msg, Object arg0, Object arg1)
-    {
-        if (_logger.isLoggable(Level.INFO))
-        {
-            _logger.log(Level.INFO,format(msg,arg0,arg1));
+    public void info(String msg, Object arg0, Object arg1) {
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.log(Level.INFO, format(msg, arg0, arg1));
         }
     }
 
-    public boolean isDebugEnabled()
-    {
+    public boolean isDebugEnabled() {
         return _logger.isLoggable(Level.FINE);
     }
 
     /**
      * Create a Child Logger of this Logger.
      */
-    protected Logger newLogger(String fullname)
-    {
+    protected Logger newLogger(String fullname) {
         return new JettyUtilLog(fullname);
     }
 
-    public void setDebugEnabled(boolean enabled)
-    {
-        if (enabled)
-        {
+    public void setDebugEnabled(boolean enabled) {
+        if (enabled) {
             configuredLevel = _logger.getLevel();
             _logger.setLevel(Level.FINE);
-        }
-        else
-        {
+        } else {
             _logger.setLevel(configuredLevel);
         }
     }
 
-    public void warn(String msg, Object arg0, Object arg1)
-    {
-        if (_logger.isLoggable(Level.WARNING))
-        {
-            _logger.log(Level.WARNING,format(msg,arg0,arg1));
+    public void warn(String msg, Object arg0, Object arg1) {
+        if (_logger.isLoggable(Level.WARNING)) {
+            _logger.log(Level.WARNING, format(msg, arg0, arg1));
         }
     }
 
-    public void warn(String msg, Throwable thrown)
-    {
-        _logger.log(Level.WARNING,msg,thrown);
+    public void warn(String msg, Throwable thrown) {
+        _logger.log(Level.WARNING, msg, thrown);
     }
 }
