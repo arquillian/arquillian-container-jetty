@@ -41,7 +41,7 @@
     <version.glassfish.el>2.2</version.glassfish.el>
     <version.jsp-api>2.2</version.jsp-api>
     <version.servlet-api>3.1.0</version.servlet-api>
-    <version.h2>1.2.138</version.h2>
+    <version.h2>1.4.198</version.h2>
 
     <!-- override from parent -->
     <maven.compiler.target>1.5</maven.compiler.target>
