@@ -16,7 +16,7 @@
   <description>Jetty Embedded 9.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>9.3.6.v20151106</version.jetty>
+    <version.jetty>11.0.0</version.jetty>
 
     <!-- Weld 2.2.x is first version of Weld to properly support Jetty 9 -->
     <version.weld>2.2.14.Final</version.weld>
