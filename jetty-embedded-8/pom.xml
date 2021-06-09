@@ -16,7 +16,7 @@
   <description>Jetty Embedded 8.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>8.1.15.v20140411</version.jetty>
+    <version.jetty>11.0.4</version.jetty>
     <version.shrinkwrap_container_jetty>1.0.0-beta-1</version.shrinkwrap_container_jetty>
   </properties>
 
