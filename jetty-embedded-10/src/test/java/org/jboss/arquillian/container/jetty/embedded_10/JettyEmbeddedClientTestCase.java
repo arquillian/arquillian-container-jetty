@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -65,8 +65,7 @@ public class JettyEmbeddedClientTestCase {
 
     @Test
     public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception {
-        String body = readAllAndClose(
-            new URL(url, MyServlet.URL_PATTERN).openStream());
+        String body = readAllAndClose(new URL(url, MyServlet.URL_PATTERN).openStream());
 
         Assert.assertEquals(
             "Verify that the servlet was deployed and returns expected result",
@@ -90,6 +89,7 @@ public class JettyEmbeddedClientTestCase {
             try {
                 is.close();
             } catch (Exception e) {
+                // ignore
             }
         }
     }

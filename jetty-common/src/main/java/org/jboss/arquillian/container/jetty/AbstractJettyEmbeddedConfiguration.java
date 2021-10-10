@@ -24,13 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded
+ * A {@link org.jboss.arquillian.container.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded
  * containers
  *
  * @author Dan Allen
  * @author Ales Justin
  * @author Alex Soto
- * @version $Revision: $
  */
 public abstract class AbstractJettyEmbeddedConfiguration implements ContainerConfiguration {
     private String bindAddress = "localhost";
@@ -119,7 +118,7 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     }
 
     public void setMimeTypes(String mimeTypes) {
-        this.mimeTypes = new HashMap<String, String>();
+        this.mimeTypes = new HashMap<>();
         String[] splittedLines = mimeTypes.split(" ");
         for (int i = 0; i < splittedLines.length; i += 2) {
             if (i + 1 >= splittedLines.length) {

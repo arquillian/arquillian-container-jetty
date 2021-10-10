@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -42,10 +38,6 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.log.JavaUtilLog;
-import org.eclipse.jetty.webapp.Configuration.ClassList;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.arquillian.container.jetty.EnvUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
@@ -66,7 +58,7 @@ import javax.servlet.ServletContext;
 
 /**
  * <p>
- * Jetty Embedded 9.x container for the Arquillian project.
+ * Jetty Embedded 10.x container for the Arquillian project.
  * </p>
  * <p>
  * <p>
@@ -87,11 +79,6 @@ import javax.servlet.ServletContext;
  */
 public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbeddedConfiguration> {
     private static final Logger log = Logger.getLogger(JettyEmbeddedContainer.class.getName());
-
-    static {
-        // Make jetty's own logging use java.util.logging
-        org.eclipse.jetty.util.log.Log.setLog(new JavaUtilLog());
-    }
 
     private Server server;
     private String listeningHost;
@@ -135,33 +122,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     public void start() throws LifecycleException {
-        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "9.4");
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "10.0");
 
         try {
             server = new Server();
-
-            // Use default configuration classes at the server level
-            ClassList serverConf = ClassList.setServerDefault(server);
-
-            String configuredConfigurationClasses = containerConfig.getConfigurationClasses();
-            if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
-                // User provided classlist, use it as-is.
-                serverConf.clear();
-                Collections.addAll(serverConf, configuredConfigurationClasses.split(","));
-            } else {
-                // Arquillian assumption is that all features of Servlet 3.1 are available.
-                // This means that annotation scanning is enabled by default.
-                // That means jetty-plus is mandatory.
-
-                // Applying equivalent of etc/jetty-annotations.xml
-                serverConf.addBefore(JettyWebXmlConfiguration.class.getName(),
-                    AnnotationConfiguration.class.getName());
-
-                // Applying equivalent of etc/jetty-plus.xml
-                serverConf.addAfter(FragmentConfiguration.class.getName()
-                    , EnvConfiguration.class.getName(),
-                    PlusConfiguration.class.getName());
-            }
 
             // Setup HTTP Configuration
             HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
@@ -299,9 +263,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
         Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
         MimeTypes mimeTypes = new MimeTypes();
-        for (Map.Entry<String, String> entry : entries) {
-            mimeTypes.addMimeMapping(entry.getKey(), entry.getValue());
-        }
+        entries.forEach(stringStringEntry ->
+            mimeTypes.addMimeMapping(stringStringEntry.getKey(), stringStringEntry.getValue()));
         return mimeTypes;
     }
 

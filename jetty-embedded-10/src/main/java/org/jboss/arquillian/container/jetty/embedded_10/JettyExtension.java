@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
- * Jetty Embedded 9.x extension.
+ * Jetty Embedded 10.x extension.
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  */

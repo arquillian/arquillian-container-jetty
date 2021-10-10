@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,16 +8,20 @@ import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.util.FileID;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.arquillian.container.jetty.embedded_9.JettyEmbeddedConfiguration.ClassLoaderBehavior;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
@@ -42,12 +46,20 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
          * 
          * Use of java.io.tmpdir on Unix systems is unreliable (due to common /tmp dir cleanup processes)
          */
-        File systemDefaultTmpDir = new File(AccessController.
-            doPrivileged((PrivilegedAction<String>) () -> System.getProperty("java.io.tmpdir")));
+        File systemDefaultTmpDir = new File(AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getProperty("java.io.tmpdir");
+            }
+        }));
 
         // If running under maven + surefire, use information provided by surefire.
-        String baseDirVal = AccessController.
-            doPrivileged((PrivilegedAction<String>) () -> System.getProperty("basedir"));
+        String baseDirVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getProperty("basedir");
+            }
+        });
 
         File mavenTmpDir = null;
         if (baseDirVal != null) {
@@ -141,6 +153,26 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         webAppContext.setDisplayName(context);
         webAppContext.setLogUrlOnStart(true);
 
+
+        String configuredConfigurationClasses = config.getConfigurationClasses();
+        if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
+            // User provided classlist, use it as-is.
+            webAppContext.setConfigurationClasses(configuredConfigurationClasses.split(","));
+
+        } else {
+            // Arquillian assumption is that all features of Servlet 3.1 are available.
+            // This means that annotation scanning is enabled by default.
+            // That means jetty-plus is mandatory.
+
+            // Applying equivalent of etc/jetty-annotations.xml
+            webAppContext.addConfiguration(new JettyWebXmlConfiguration(),
+                new AnnotationConfiguration());
+
+            // Applying equivalent of etc/jetty-plus.xml
+            webAppContext.addConfiguration(new FragmentConfiguration()
+                , new EnvConfiguration(), new PlusConfiguration());
+        }
+
         // special case of archive (or dir) named "root" is / context
         if (context.equalsIgnoreCase("root")) {
             context = URIUtil.SLASH;
@@ -163,7 +195,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         }
         webAppContext.setExtractWAR(true);
 
-        webAppContext.setParentLoaderPriority(config.getClassloaderBehavior() == ClassLoaderBehavior.JAVA_SPEC);
+        webAppContext.setParentLoaderPriority(config.getClassloaderBehavior() == JettyEmbeddedConfiguration.ClassLoaderBehavior.JAVA_SPEC);
 
         if (config.getTempDirectory() != null) {
             /*

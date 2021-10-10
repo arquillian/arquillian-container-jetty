@@ -25,40 +25,39 @@ import org.junit.Test;
  * VersionUtilTestCase
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
- * @version $Revision: $
  */
 public class VersionUtilTest {
 
     @Test
-    public void shouldBeAbleToExtract() throws Exception {
+    public void shouldBeAbleToExtract() {
         Version version = VersionUtil.extract("1.2");
         Assert.assertEquals(1, version.getMajor());
         Assert.assertEquals(2, version.getMinor());
     }
 
     @Test
-    public void shouldBeAbleToExtractWithMultipleDigits() throws Exception {
+    public void shouldBeAbleToExtractWithMultipleDigits() {
         Version version = VersionUtil.extract("10.300");
         Assert.assertEquals(10, version.getMajor());
         Assert.assertEquals(300, version.getMinor());
     }
 
     @Test
-    public void shouldBeAbleToExtractWithBuild() throws Exception {
+    public void shouldBeAbleToExtractWithBuild() {
         Version version = VersionUtil.extract("1.2.50.A");
         Assert.assertEquals(1, version.getMajor());
         Assert.assertEquals(2, version.getMinor());
     }
 
     @Test
-    public void shouldReturnZeroVersionOnNull() throws Exception {
+    public void shouldReturnZeroVersionOnNull() {
         Version version = VersionUtil.extract(null);
         Assert.assertEquals(0, version.getMajor());
         Assert.assertEquals(0, version.getMinor());
     }
 
     @Test
-    public void shouldReturnZeroVersionOnNullUnMatched() throws Exception {
+    public void shouldReturnZeroVersionOnNullUnMatched() {
         Version version = VersionUtil.extract("243223.A");
         Assert.assertEquals(0, version.getMajor());
         Assert.assertEquals(0, version.getMinor());
