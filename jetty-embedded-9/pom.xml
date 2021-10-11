@@ -20,7 +20,7 @@
 
     <!-- Weld 2.2.x is first version of Weld to properly support Jetty 9 -->
     <version.weld>2.2.14.Final</version.weld>
-    <version.guava>13.0.1</version.guava>
+    <version.guava>23.0</version.guava>
   </properties>
 
   <build>
