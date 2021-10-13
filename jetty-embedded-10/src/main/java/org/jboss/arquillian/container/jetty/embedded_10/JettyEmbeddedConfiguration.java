@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import java.io.File;
 import java.net.URI;
@@ -23,14 +23,14 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.jboss.arquillian.container.jetty.AbstractJettyEmbeddedConfiguration;
 
 /**
- * A {@link org.jboss.arquillian.container.spi.client.container.ContainerConfiguration} implementation for the Jetty Embedded
+ * A {@link org.jboss.arquillian.spi.client.container.ContainerConfiguration} implementation for the Jetty Embedded
  * containers.
  *
  * @author Dan Allen
  * @author Ales Justin
  */
 public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfiguration {
-    public enum ClassLoaderBehavior
+    public static enum ClassLoaderBehavior
 
     {
         /**
@@ -46,7 +46,7 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
     /**
      * Classloader Search Order behavior.
      * <p>
-     * Default for Arquillian is {@link ClassLoaderBehavior#JAVA_SPEC}.
+     * Default for Arquillian is {@link JAVA_SPEC}.
      */
     private ClassLoaderBehavior classloaderBehavior = ClassLoaderBehavior.JAVA_SPEC;
 

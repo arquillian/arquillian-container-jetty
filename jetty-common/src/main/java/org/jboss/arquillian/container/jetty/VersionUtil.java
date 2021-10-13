@@ -21,15 +21,15 @@ package org.jboss.arquillian.container.jetty;
  * VersionUtil
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
- * @version $Revision: $
+
  */
 public class VersionUtil {
     private VersionUtil() {
     }
 
     public static class Version implements Comparable<Version> {
-        private Integer major;
-        private Integer minor;
+        private final Integer major;
+        private final Integer minor;
 
         public Version(int major, int minor) {
             this.major = major;
@@ -63,7 +63,7 @@ public class VersionUtil {
         }
     }
 
-    private static String expression = "([0-9]{1,5})\\.([0-9]{1,5}).*";
+    private static final String expression = "([0-9]{1,5})\\.([0-9]{1,5}).*";
 
     public static Version extract(String version) {
         if (version == null || !version.matches(expression)) {

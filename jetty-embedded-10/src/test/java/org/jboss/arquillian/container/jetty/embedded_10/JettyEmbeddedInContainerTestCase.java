@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_9;
+package org.jboss.arquillian.container.jetty.embedded_10;
 
 import java.sql.Connection;
 
@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
  * In-container test case for the Jetty Embedded 9 container
  *
  * @author Dan Allen
+ *
  */
 @RunWith(Arquillian.class)
 public class JettyEmbeddedInContainerTestCase {
@@ -45,7 +46,7 @@ public class JettyEmbeddedInContainerTestCase {
      */
     @Deployment
     public static WebArchive getTestArchive() {
-        final WebArchive war = ShrinkWrap.create(WebArchive.class)
+        return ShrinkWrap.create(WebArchive.class)
             .addClass(MyBean.class)
             // adding the configuration class silences the logged exception when building the configuration on the server-side, but shouldn't be necessary
             //.addClass(JettyEmbeddedConfiguration.class)
@@ -59,7 +60,6 @@ public class JettyEmbeddedInContainerTestCase {
             .addAsWebInfResource("jetty-env.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             .setWebXML("in-container-web.xml");
-        return war;
     }
 
     // defined in jetty-env.xml, scoped to global
@@ -76,14 +76,15 @@ public class JettyEmbeddedInContainerTestCase {
     @Inject MyBean testBean;
 
     @Test
-    public void shouldBeAbleToInjectMembersIntoTestClass() throws Exception {
+    public void shouldBeAbleToInjectMembersIntoTestClass() {
         Assert.assertNotNull(version);
-        Assert.assertEquals(new Integer(6), version);
+        Assert.assertEquals(Integer.valueOf(6), version);
         Assert.assertNotNull(name);
         Assert.assertEquals("Jetty", name);
         Assert.assertNotNull(containerType);
         Assert.assertEquals("Embedded", containerType);
         Assert.assertNotNull(ds);
+
         try (Connection c = ds.getConnection()) {
             Assert.assertEquals("H2", c.getMetaData().getDatabaseProductName());
         } catch (Exception e) {

@@ -11,32 +11,19 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>arquillian-jetty-embedded-9</artifactId>
-  <name>Arquillian Container Jetty Embedded 9.x</name>
-  <description>Jetty Embedded 9.x container integration for the Arquillian project</description>
+  <artifactId>arquillian-jetty-embedded-10</artifactId>
+  <name>Arquillian Container Jetty Embedded 10.0.x</name>
+  <description>Jetty Embedded 10.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>9.4.44.v20210927</version.jetty>
+    <version.jetty>10.0.6</version.jetty>
+    <version.weld>3.1.8.Final</version.weld>
+    <version.guava>13.0.1</version.guava>
 
-    <!-- Weld 2.2.x is first version of Weld to properly support Jetty 9 -->
-    <version.weld>2.2.14.Final</version.weld>
+    <!-- Jetty 10 need Java 11 -->
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
   </properties>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <!-- Jetty 9.4.x has a Java 8 minimum requirement -->
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -139,6 +126,12 @@
       <artifactId>el-impl</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>javax.el-api</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
     </dependency>
@@ -163,11 +156,24 @@
       <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Without this the shrinkwrap layer tries to download it in offline mode and fails -->
+    <dependency>
+      <groupId>org.jboss.spec.javax.el</groupId>
+      <artifactId>jboss-el-api_3.0_spec</artifactId>
+      <version>2.0.0.Final</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.el</groupId>
+          <artifactId>jboss-el-api_3.0_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -177,4 +183,5 @@
     </dependency>
 
   </dependencies>
+
 </project>
