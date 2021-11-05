@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_10;
+package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * Client test case for the Jetty Embedded 9 container
@@ -50,7 +50,7 @@ public class JettyEmbeddedClientTestCase {
         return ShrinkWrap.create(WebArchive.class, "client-test.war")
             .addClass(MyServlet.class)
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
-                .version("3.0")
+                .version("4.0")
                 .createServlet()
                 .servletClass(MyServlet.class.getName())
                 .servletName("MyServlet").up()
@@ -79,7 +79,7 @@ public class JettyEmbeddedClientTestCase {
     }
 
     private String readAllAndClose(InputStream is) throws Exception {
-        try (is; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        try (is;ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             int read;
             while ((read = is.read()) != -1) {
                 out.write(read);

@@ -32,9 +32,9 @@
   <properties>
 
     <!-- Versioning -->
-    <version.arquillian_core>1.6.0.Final</version.arquillian_core>
+    <version.arquillian_core>1.7.0.Alpha10</version.arquillian_core>
 
-    <version.shrinkwrap>2.2.6</version.shrinkwrap>
+    <version.shrinkwrap>3.1.4</version.shrinkwrap>
 
     <version.weld>3.1.8.Final</version.weld>
     <version.cdi-api>2.0</version.cdi-api>
@@ -157,7 +157,7 @@
         <plugins>
           <!--
               surefire default forks the JVM for testing, so we need to pass on the maven.repo.local variable so the MavenResovler used in
-              the test cases can read from the same lcoal repo.
+              the test cases can read from the same local repo.
            -->
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -175,6 +175,7 @@
   <modules>
     <module>jetty-embedded-9</module>
     <module>jetty-embedded-10</module>
+    <module>jetty-embedded-11</module>
     <module>jetty-common</module>
   </modules>
 

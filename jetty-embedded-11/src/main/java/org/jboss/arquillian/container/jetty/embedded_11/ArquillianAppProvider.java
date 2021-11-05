@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_10;
+package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.File;
 import java.io.IOException;
