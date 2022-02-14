@@ -39,7 +39,7 @@
     <version.cdi-api>2.0</version.cdi-api>
     <version.glassfish.el>2.2</version.glassfish.el>
     <version.jsp-api>2.2</version.jsp-api>
-    <version.servlet-api>3.1.0</version.servlet-api>
+    <version.servlet-api>4.0.1</version.servlet-api>
     <version.h2>2.1.210</version.h2>
 
     <!-- override from parent -->
