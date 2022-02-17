@@ -126,8 +126,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public ProtocolDescription getDefaultProtocol() {
         // Jetty 9 is a Servlet 3.1 container.
         // However, Arquillian "Protocol" actuall means "Packaging"
-        // TODO: Fix to servlet 3.1 (when available in arquillian)
-        return new ProtocolDescription("Servlet 3.0");
+        return new ProtocolDescription("Servlet 3.1");
     }
 
     public void setup(JettyEmbeddedConfiguration containerConfig) {
