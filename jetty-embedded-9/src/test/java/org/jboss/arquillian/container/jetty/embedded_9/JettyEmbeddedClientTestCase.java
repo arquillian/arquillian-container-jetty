@@ -21,18 +21,22 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptors;
 import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.servlet.ServletContext;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Client test case for the Jetty Embedded 9 container
@@ -40,7 +44,7 @@ import javax.servlet.ServletContext;
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @author Dan Allen
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class JettyEmbeddedClientTestCase {
     /**
      * Deployment for the test
@@ -63,20 +67,22 @@ public class JettyEmbeddedClientTestCase {
     @ArquillianResource
     ServletContext servletContext;
 
+    @ArquillianResource URL url;
+
     @Test
-    public void shouldBeAbleToInvokeServletInDeployedWebApp(@ArquillianResource URL url) throws Exception {
+    public void shouldBeAbleToInvokeServletInDeployedWebApp() throws Exception {
         String body = readAllAndClose(
             new URL(url, MyServlet.URL_PATTERN).openStream());
 
-        Assert.assertEquals(
+        assertThat(
             "Verify that the servlet was deployed and returns expected result",
-            MyServlet.MESSAGE,
-            body);
+            body,
+            is(MyServlet.MESSAGE));
     }
 
     @Test
     public void shouldEnrichTestWithServletContext() {
-        Assert.assertNotNull(servletContext);
+        assertThat(servletContext, notNullValue());
     }
 
     private String readAllAndClose(InputStream is) throws Exception {
