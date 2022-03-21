@@ -23,22 +23,25 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * In-container test case for the Jetty Embedded 9 container
  *
  * @author Dan Allen
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class JettyEmbeddedInContainerTestCase {
     /**
      * Deployment for the test
@@ -77,19 +80,17 @@ public class JettyEmbeddedInContainerTestCase {
 
     @Test
     public void shouldBeAbleToInjectMembersIntoTestClass() throws Exception {
-        Assert.assertNotNull(version);
-        Assert.assertEquals(new Integer(6), version);
-        Assert.assertNotNull(name);
-        Assert.assertEquals("Jetty", name);
-        Assert.assertNotNull(containerType);
-        Assert.assertEquals("Embedded", containerType);
-        Assert.assertNotNull(ds);
+        assertThat(version, notNullValue());
+        assertThat(version, is(6));
+        assertThat(name, notNullValue());
+        assertThat(name, is("Jetty"));
+        assertThat(containerType, notNullValue());
+        assertThat(containerType, is("Embedded"));
+        assertThat(ds, notNullValue());
         try (Connection c = ds.getConnection()) {
-            Assert.assertEquals("H2", c.getMetaData().getDatabaseProductName());
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            assertThat(c.getMetaData().getDatabaseProductName(), is("H2"));
         }
-        Assert.assertNotNull(testBean);
-        Assert.assertEquals("Jetty", testBean.getName());
+        assertThat(testBean, notNullValue());
+        assertThat(testBean.getName(), is("Jetty"));
     }
 }
