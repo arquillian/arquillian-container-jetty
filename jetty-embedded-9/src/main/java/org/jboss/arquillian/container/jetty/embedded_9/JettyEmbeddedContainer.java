@@ -26,6 +26,7 @@ import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
@@ -170,6 +171,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 if (this.containerConfig.isHeaderBufferSizeSet()) {
                     httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
                     httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
+                }
+                if(this.containerConfig.getRequestCookieCompliance()!=null) {
+                    httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
+                }
+                if(this.containerConfig.getResponseCookieCompliance()!=null) {
+                    httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
                 }
             }
 
