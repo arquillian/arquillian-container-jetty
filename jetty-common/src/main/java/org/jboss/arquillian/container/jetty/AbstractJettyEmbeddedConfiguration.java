@@ -48,6 +48,10 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
      */
     private String configurationClasses;
 
+    private String requestCookieCompliance;
+
+    private String responseCookieCompliance;
+
     /*
      * (non-Javadoc)
      * 
@@ -136,5 +140,21 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     public Map<String, String> getMimeTypes() {
         return mimeTypes;
+    }
+
+    public String getRequestCookieCompliance() {
+        return requestCookieCompliance;
+    }
+
+    public void setRequestCookieCompliance(String requestCookieCompliance) {
+        this.requestCookieCompliance = requestCookieCompliance;
+    }
+
+    public String getResponseCookieCompliance() {
+        return responseCookieCompliance;
+    }
+
+    public void setResponseCookieCompliance(String responseCookieCompliance) {
+        this.responseCookieCompliance = responseCookieCompliance;
     }
 }
