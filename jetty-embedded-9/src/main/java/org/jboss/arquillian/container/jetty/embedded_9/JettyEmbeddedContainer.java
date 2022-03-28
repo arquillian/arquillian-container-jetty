@@ -266,7 +266,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
             App app = appProvider.createApp(archive);
-
+            deployer.removeApp(app);
             WebAppContext webAppContext = getWebAppContext(app);
 
             if (containerConfig.areMimeTypesSet()) {
