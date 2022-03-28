@@ -3,6 +3,8 @@ package org.jboss.arquillian.container.jetty.embedded_10;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Locale;
@@ -96,10 +98,16 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
         final File exported;
         try {
-            // If this method returns successfully then it is guaranteed that:
-            // 1. The file denoted by the returned abstract pathname did not exist before this method was invoked, and
-            // 2. Neither this method nor any of its variants will return the same abstract pathname again in the current invocation of the virtual machine.
-            exported = File.createTempFile(EXPORT_FILE_PREFIX, archive.getName(), EXPORT_DIR);
+            if (this.config.isUseArchiveNameAsContext()) {
+                Path tmpDirectory = Files.createTempDirectory("arquillian-jetty");
+                exported = Files.createFile(tmpDirectory.resolveSibling(archive.getName())).toFile();
+                exported.deleteOnExit();
+            } else {
+                // If this method returns successfully then it is guaranteed that:
+                // 1. The file denoted by the returned abstract pathname did not exist before this method was invoked, and
+                // 2. Neither this method nor any of its variants will return the same abstract pathname again in the current invocation of the virtual machine.
+                exported = File.createTempFile(EXPORT_FILE_PREFIX, archive.getName(), EXPORT_DIR);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not create temporary File in " + EXPORT_DIR + " to write exported archive",
                 e);

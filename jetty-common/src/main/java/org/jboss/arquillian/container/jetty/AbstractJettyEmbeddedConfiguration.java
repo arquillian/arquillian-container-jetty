@@ -52,6 +52,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     private String responseCookieCompliance;
 
+    private boolean useArchiveNameAsContext;
+
     /*
      * (non-Javadoc)
      * 
@@ -156,5 +158,13 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     public void setResponseCookieCompliance(String responseCookieCompliance) {
         this.responseCookieCompliance = responseCookieCompliance;
+    }
+
+    public boolean isUseArchiveNameAsContext() {
+        return useArchiveNameAsContext;
+    }
+
+    public void setUseArchiveNameAsContext(boolean useArchiveNameAsContext) {
+        this.useArchiveNameAsContext = useArchiveNameAsContext;
     }
 }
