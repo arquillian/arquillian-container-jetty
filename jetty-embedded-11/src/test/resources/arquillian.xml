@@ -15,6 +15,9 @@
         js application/js
         txt text/plain
       </property>
+      <property name="inferredEncodings">
+        text/html iso-8859-1
+      </property>
     </configuration>
   </container>
 </arquillian>

@@ -16,25 +16,34 @@
  */
 package org.jboss.arquillian.container.jetty.embedded_11;
 
+import java.net.URL;
 import java.sql.Connection;
 
 import jakarta.annotation.Resource;
 import jakarta.inject.Inject;
 import javax.sql.DataSource;
 
+import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.descriptor.api.Descriptors;
+import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.jboss.arquillian.container.jetty.embedded_11.JettyEmbeddedClientTestCase.readAllAndClose;
 
 /**
  * In-container test case for the Jetty Embedded 9 container
@@ -65,6 +74,24 @@ public class JettyEmbeddedInContainerTestCase {
             .setWebXML("in-container-web.xml");
     }
 
+    @Deployment(name="encoding")
+    public static WebArchive getEncodingTestArchive() {
+        return ShrinkWrap.create(WebArchive.class)
+            .addClass(MyEncodingServlet.class)
+            .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
+                .version("4.0")
+                .createServlet()
+                .servletClass(MyEncodingServlet.class.getName())
+                .servletName("encoding").up()
+                .createServletMapping()
+                .servletName("encoding")
+                .urlPattern(MyEncodingServlet.URL_PATTERN).up()
+                .exportAsString()));
+    }
+
+    @ArquillianResource @OperateOnDeployment("encoding")
+    private URL encodingUrl;
+
     // defined in jetty-env.xml, scoped to global
     @Resource(mappedName = "version") Integer version;
 
@@ -94,5 +121,15 @@ public class JettyEmbeddedInContainerTestCase {
         // FIXME this
         //Assert.assertNotNull(testBean);
         //Assert.assertEquals("Jetty", testBean.getName());
+    }
+
+    @Test
+    public void shouldBeEncodingDefined() throws Exception {
+        String body = readAllAndClose(new URL(encodingUrl, MyEncodingServlet.URL_PATTERN).openStream());
+
+        assertThat(
+            "Should contains iso-8859-1",
+            body,
+            StringContains.containsString("iso-8859-1"));
     }
 }

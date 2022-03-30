@@ -83,7 +83,7 @@ public class JettyEmbeddedClientTestCase {
         assertThat(servletContext, notNullValue());
     }
 
-    private String readAllAndClose(InputStream is) throws Exception {
+    public static String readAllAndClose(InputStream is) throws Exception {
         try (is;ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             int read;
             while ((read = is.read()) != -1) {
