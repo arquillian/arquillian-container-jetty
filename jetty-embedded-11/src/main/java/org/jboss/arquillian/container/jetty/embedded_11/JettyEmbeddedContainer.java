@@ -183,6 +183,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 server.addBean(hashUserRealm);
             }
 
+            if (containerConfig.areInferredEncodings()) {
+                containerConfig.getInferredEncodings().forEach((s, s2) -> MimeTypes.getInferredEncodings().put(s, s2));
+            }
+
             server.setDumpAfterStart(containerConfig.isDumpServerAfterStart());
             log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
             server.start();
