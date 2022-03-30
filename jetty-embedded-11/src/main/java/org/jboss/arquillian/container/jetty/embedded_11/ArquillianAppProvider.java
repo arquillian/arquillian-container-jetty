@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -18,6 +20,7 @@ import org.eclipse.jetty.deploy.util.FileID;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
@@ -26,6 +29,7 @@ import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvider {
     private static final Logger LOG = Logger.getLogger(ArquillianAppProvider.class.getName());
@@ -79,9 +83,11 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
     private final JettyEmbeddedConfiguration config;
     private DeploymentManager deploymentManager;
+    private final Collection<WebAppContextProcessor> webAppContextProcessors;
 
-    public ArquillianAppProvider(JettyEmbeddedConfiguration config) {
+    public ArquillianAppProvider(JettyEmbeddedConfiguration config, Collection<WebAppContextProcessor> webAppContextProcessors) {
         this.config = config;
+        this.webAppContextProcessors = webAppContextProcessors;
     }
 
     protected App createApp(final Archive<?> archive) {
@@ -124,7 +130,16 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         URI uri = exported.toURI();
         LOG.info("Webapp archive location: " + uri.toASCIIString());
 
-        return new App(deploymentManager, this, uri.toASCIIString());
+        return new ArchiveApp(deploymentManager, this, uri.toASCIIString(), archive);
+    }
+
+    private static class ArchiveApp extends App  {
+        private final Archive<?> archive;
+
+        public ArchiveApp(DeploymentManager manager, AppProvider provider, String originId, Archive<?> archive) {
+            super(manager, provider, originId);
+            this.archive = archive;
+        }
     }
 
     @Override
@@ -152,7 +167,6 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setDisplayName(context);
         webAppContext.setLogUrlOnStart(true);
-
 
         String configuredConfigurationClasses = config.getConfigurationClasses();
         if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
@@ -205,6 +219,9 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
              */
             webAppContext.setAttribute(WebAppContext.BASETEMPDIR, config.getTempDirectory());
         }
+
+        webAppContextProcessors.forEach(processor -> processor.process(webAppContext, ((ArchiveApp)app).archive));
+
         return webAppContext;
     }
 

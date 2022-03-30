@@ -17,6 +17,8 @@
 package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -49,9 +51,11 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
+import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
+import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 
@@ -96,6 +100,9 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     @Inject
     @ApplicationScoped
     private InstanceProducer<ServletContext> servletContextInstanceProducer;
+
+    @Inject
+    private Instance<ServiceLoader> serviceLoader;
 
     /*
      * (non-Javadoc)
@@ -158,7 +165,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             // Deployment Management
             deployer = new DeploymentManager();
             deployer.setContexts(contexts);
-            appProvider = new ArquillianAppProvider(containerConfig);
+            Collection<WebAppContextProcessor> webAppContextProcessors = serviceLoader.get().all(WebAppContextProcessor.class);
+            appProvider = new ArquillianAppProvider(containerConfig, webAppContextProcessors);
             deployer.addAppProvider(appProvider);
             server.addBean(deployer);
 
