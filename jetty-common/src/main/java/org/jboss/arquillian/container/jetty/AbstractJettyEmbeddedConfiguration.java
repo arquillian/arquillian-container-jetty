@@ -38,6 +38,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     private Map<String, String> mimeTypes;
 
+    private Map<String, String> inferredEncodings;
+
     private int headerBufferSize = 0;
 
     private File realmProperties;
@@ -166,5 +168,26 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     public void setUseArchiveNameAsContext(boolean useArchiveNameAsContext) {
         this.useArchiveNameAsContext = useArchiveNameAsContext;
+    }
+
+    public void setInferredEncodings(String inferredEncodings) {
+        this.inferredEncodings = new HashMap<>();
+        String[] splittedLines = inferredEncodings.split(" ");
+        for (int i = 0; i < splittedLines.length; i += 2) {
+            if (i + 1 >= splittedLines.length) {
+                throw new ConfigurationException(String.format(
+                    "Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.",
+                    inferredEncodings));
+            }
+            this.inferredEncodings.put(splittedLines[i], splittedLines[i + 1]);
+        }
+    }
+
+    public boolean areInferredEncodings() {
+        return this.inferredEncodings != null;
+    }
+
+    public Map<String, String> getInferredEncodings() {
+        return inferredEncodings;
     }
 }
