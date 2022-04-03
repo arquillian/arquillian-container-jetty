@@ -18,9 +18,17 @@ package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -28,10 +36,19 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptors;
 import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import jakarta.servlet.ServletContext;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,7 +67,25 @@ public class JettyEmbeddedClientTestCase {
      */
     @Deployment(testable = false)
     public static WebArchive getTestArchive() {
-        return ShrinkWrap.create(WebArchive.class, "client-test.war")
+        return ShrinkWrap.create(WebArchive.class, "client-http.war")
+            .addClass(MyServlet.class)
+            .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
+                .version("4.0")
+                .createServlet()
+                .servletClass(MyServlet.class.getName())
+                .servletName("MyServlet").up()
+                .createServletMapping()
+                .servletName("MyServlet")
+                .urlPattern(MyServlet.URL_PATTERN).up()
+                .exportAsString()));
+    }
+
+    /**
+     * Deployment for the test
+     */
+    @Deployment(testable = false, name = "webapp-https") @TargetsContainer("https")
+    public static WebArchive getTestArchiveHttps() {
+        return ShrinkWrap.create(WebArchive.class, "client-https.war")
             .addClass(MyServlet.class)
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
                 .version("4.0")
@@ -68,9 +103,43 @@ public class JettyEmbeddedClientTestCase {
 
     @ArquillianResource URL url;
 
+    @ArquillianResource @OperateOnDeployment("webapp-https") URL urlHttps;
+
+    private HttpClient httpClient;
+    private final SslContextFactory.Client clientSslContextFactory = new SslContextFactory.Client();
+
+    @BeforeEach
+    private void setup() throws Exception {
+        clientSslContextFactory.setTrustAll(true);
+        ClientConnector clientConnector = new ClientConnector();
+        clientConnector.setSelectors(1);
+        clientConnector.setSslContextFactory(clientSslContextFactory);
+        httpClient = new HttpClient(new HttpClientTransportOverHTTP(clientConnector));
+        httpClient.start();
+    }
+
+    @AfterEach
+    private void shutdown() throws Exception {
+        if(httpClient.isRunning()) {
+            httpClient.stop();
+        }
+    }
+
     @Test
     public void shouldBeAbleToInvokeServletInDeployedWebApp() throws Exception {
-        String body = readAllAndClose(new URL(url, MyServlet.URL_PATTERN).openStream());
+
+        String body = httpClient.GET(new URL(url, MyServlet.URL_PATTERN).toURI()).getContentAsString();
+
+        assertThat(
+            "Verify that the servlet was deployed and returns expected result",
+            body,
+            is(MyServlet.MESSAGE));
+    }
+
+    @Test
+    public void shouldBeAbleToInvokeServletInDeployedWebAppHttps() throws Exception {
+        URL url = new URL("https", urlHttps.getHost(), urlHttps.getPort(), urlHttps.getPath() + MyServlet.URL_PATTERN);
+        String body = httpClient.GET(url.toURI()).getContentAsString();
 
         assertThat(
             "Verify that the servlet was deployed and returns expected result",

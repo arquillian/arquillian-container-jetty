@@ -18,7 +18,6 @@ package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -27,20 +26,25 @@ import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.http.CookieCompliance;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.arquillian.container.jetty.EnvUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
@@ -134,25 +138,25 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         try {
             server = new Server();
 
-            // Setup HTTP Configuration
-            HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-            if (httpConfig == null) {
-                httpConfig = new HttpConfiguration();
-                if (this.containerConfig.isHeaderBufferSizeSet()) {
-                    httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
-                    httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
-                }
-                if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                    httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
-                }
-                if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                    httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
-                }
-            }
+            HttpConfiguration httpConfig = getHttpConfiguration();
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);
             // Setup Connector
-            ServerConnector connector = new ServerConnector(server, connectionFactory);
+            ServerConnector connector;
+            if (containerConfig.isSsl()) {
+                SslContextFactory.Server sslContextFactory = getSslContextFactory();
+                server.addBean(sslContextFactory);
+                SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+                sslConnectionFactory.setEnsureSecureRequestCustomizer(containerConfig.isSniRequired());
+                connector = new ServerConnector(server, sslConnectionFactory, connectionFactory);
+            } else {
+                connector = new ServerConnector(server, connectionFactory);
+            }
+
+            if (containerConfig.isH2cEnabled()) {
+                HTTP2CServerConnectionFactory http2CServerConnectionFactory = new HTTP2CServerConnectionFactory(httpConfig);
+                connector.addConnectionFactory(http2CServerConnectionFactory);
+            }
 
             connector.setHost(containerConfig.getBindAddress());
             connector.setPort(containerConfig.getBindHttpPort());
@@ -291,5 +295,55 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         if (app != null) {
             deployer.requestAppGoal(app, AppLifeCycle.UNDEPLOYED);
         }
+    }
+
+    /**
+     * Setup HTTP Configuration
+     * @return HttpConfiguration
+     */
+    private HttpConfiguration getHttpConfiguration() {
+        HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
+        if (httpConfig == null) {
+            httpConfig = new HttpConfiguration();
+            if (this.containerConfig.isHeaderBufferSizeSet()) {
+                httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+                httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
+            }
+            if(this.containerConfig.getRequestCookieCompliance()!=null) {
+                httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
+            }
+            if(this.containerConfig.getResponseCookieCompliance()!=null) {
+                httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
+            }
+        }
+
+        SecureRequestCustomizer secureRequestCustomizer = httpConfig.getCustomizer(SecureRequestCustomizer.class);
+        if (secureRequestCustomizer == null) {
+            secureRequestCustomizer = new SecureRequestCustomizer();
+            httpConfig.addCustomizer(secureRequestCustomizer);
+        }
+        secureRequestCustomizer.setSniHostCheck(containerConfig.isSniHostCheck());
+        secureRequestCustomizer.setSniRequired(containerConfig.isSniRequired());
+        return httpConfig;
+    }
+
+    private SslContextFactory.Server getSslContextFactory() {
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+        if (containerConfig.getKeystorePath() != null) {
+            sslContextFactory.setKeyStorePath(new File(containerConfig.getKeystorePath()).getAbsolutePath());
+        }
+        if (containerConfig.getKeystorePassword() != null) {
+            sslContextFactory.setKeyStorePassword(containerConfig.getKeystorePassword());
+        }
+        if(containerConfig.getTrustStorePath() != null) {
+            sslContextFactory.setTrustStorePath(new File(containerConfig.getTrustStorePath()).getAbsolutePath());
+        }
+        if(containerConfig.getTrustStorePassword() != null) {
+            sslContextFactory.setTrustStorePassword(containerConfig.getTrustStorePassword());
+        }
+        sslContextFactory.setNeedClientAuth(containerConfig.isNeedClientAuth());
+        sslContextFactory.setSniRequired(containerConfig.isSniRequired());
+
+        return sslContextFactory;
     }
 }
