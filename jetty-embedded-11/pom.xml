@@ -16,7 +16,7 @@
 
   <properties>
     <version.jetty>11.0.9</version.jetty>
-    <version.weld>3.1.8.Final</version.weld>
+    <version.weld>4.0.3.Final</version.weld>
     <version.guava>13.0.1</version.guava>
 
     <!-- Jetty 10 need Java 11 -->
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
-      <version>4.0.2.Final</version>
+      <version>4.0.3.Final</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

@@ -35,7 +35,7 @@
 
     <version.shrinkwrap>3.1.4</version.shrinkwrap>
 
-    <version.weld>3.1.8.Final</version.weld>
+    <version.weld>4.0.3.Final</version.weld>
     <version.cdi-api>2.0</version.cdi-api>
     <version.glassfish.el>2.2</version.glassfish.el>
     <version.jsp-api>2.2</version.jsp-api>
