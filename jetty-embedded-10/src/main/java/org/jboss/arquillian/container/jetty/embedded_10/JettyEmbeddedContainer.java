@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -135,6 +136,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                     httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
                     httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
                 }
+                if(this.containerConfig.getRequestCookieCompliance()!=null) {
+                    httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
+                }
+                if(this.containerConfig.getResponseCookieCompliance()!=null) {
+                    httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
+                }
             }
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);
@@ -223,7 +230,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
             App app = appProvider.createApp(archive);
-
+            deployer.removeApp(app);
             WebAppContext webAppContext = getWebAppContext(app);
 
             if (containerConfig.areMimeTypesSet()) {

@@ -18,8 +18,10 @@
 package org.jboss.arquillian.container.jetty;
 
 import org.jboss.arquillian.container.jetty.VersionUtil.Version;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * VersionUtilTestCase
@@ -31,36 +33,36 @@ public class VersionUtilTest {
     @Test
     public void shouldBeAbleToExtract() {
         Version version = VersionUtil.extract("1.2");
-        Assert.assertEquals(1, version.getMajor());
-        Assert.assertEquals(2, version.getMinor());
+        assertThat(version.getMajor(), is(1));
+        assertThat(version.getMinor(), is(2));
     }
 
     @Test
     public void shouldBeAbleToExtractWithMultipleDigits() {
         Version version = VersionUtil.extract("10.300");
-        Assert.assertEquals(10, version.getMajor());
-        Assert.assertEquals(300, version.getMinor());
+        assertThat(version.getMajor(), is(10));
+        assertThat(version.getMinor(), is(300));
     }
 
     @Test
     public void shouldBeAbleToExtractWithBuild() {
         Version version = VersionUtil.extract("1.2.50.A");
-        Assert.assertEquals(1, version.getMajor());
-        Assert.assertEquals(2, version.getMinor());
+        assertThat(version.getMajor(), is(1));
+        assertThat(version.getMinor(), is(2));
     }
 
     @Test
     public void shouldReturnZeroVersionOnNull() {
         Version version = VersionUtil.extract(null);
-        Assert.assertEquals(0, version.getMajor());
-        Assert.assertEquals(0, version.getMinor());
+        assertThat(version.getMajor(), is(0));
+        assertThat(version.getMinor(), is(0));
     }
 
     @Test
     public void shouldReturnZeroVersionOnNullUnMatched() {
         Version version = VersionUtil.extract("243223.A");
-        Assert.assertEquals(0, version.getMajor());
-        Assert.assertEquals(0, version.getMinor());
+        assertThat(version.getMajor(), is(0));
+        assertThat(version.getMinor(), is(0));
     }
 
     @Test
@@ -68,7 +70,7 @@ public class VersionUtilTest {
         Version greater = VersionUtil.extract("7.1");
         Version then = VersionUtil.extract("7.1");
 
-        Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
+        assertThat(VersionUtil.isGreaterThenOrEqual(greater, then), is(true));
     }
 
     @Test
@@ -76,7 +78,7 @@ public class VersionUtilTest {
         Version greater = VersionUtil.extract("7.2");
         Version then = VersionUtil.extract("7.1");
 
-        Assert.assertTrue(VersionUtil.isGreaterThenOrEqual(greater, then));
+        assertThat(VersionUtil.isGreaterThenOrEqual(greater, then), is(true));
     }
 
     @Test
@@ -84,7 +86,7 @@ public class VersionUtilTest {
         Version less = VersionUtil.extract("7.1");
         Version then = VersionUtil.extract("7.1");
 
-        Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
+        assertThat(VersionUtil.isLessThenOrEqual(less, then), is(true));
     }
 
     @Test
@@ -92,6 +94,6 @@ public class VersionUtilTest {
         Version less = VersionUtil.extract("7.1");
         Version then = VersionUtil.extract("7.2");
 
-        Assert.assertTrue(VersionUtil.isLessThenOrEqual(less, then));
+        assertThat(VersionUtil.isLessThenOrEqual(less, then), is(true));
     }
 }

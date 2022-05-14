@@ -38,6 +38,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     private Map<String, String> mimeTypes;
 
+    private Map<String, String> inferredEncodings;
+
     private int headerBufferSize = 0;
 
     private File realmProperties;
@@ -48,9 +50,36 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
      */
     private String configurationClasses;
 
+    private String requestCookieCompliance;
+
+    private String responseCookieCompliance;
+
+    private boolean useArchiveNameAsContext;
+
+    private boolean ssl;
+
+    private boolean h2cEnabled;
+
+    /**
+     * Path to keystore file
+     */
+    private String keystorePath;
+
+    private String keystorePassword;
+
+    private String trustStorePath;
+
+    private String trustStorePassword;
+
+    private boolean sniRequired;
+
+    private boolean sniHostCheck;
+
+    private boolean needClientAuth;
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.jboss.arquillian.spi.client.container.ContainerConfiguration#validate()
      */
     public void validate() throws ConfigurationException {
@@ -86,8 +115,7 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     }
 
     /**
-     * @param configurationClasses
-     *     A comma separated list of fully qualified configuration classes
+     * @param configurationClasses A comma separated list of fully qualified configuration classes
      */
     public void setConfigurationClasses(String configurationClasses) {
         this.configurationClasses = configurationClasses;
@@ -137,4 +165,122 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     public Map<String, String> getMimeTypes() {
         return mimeTypes;
     }
+
+    public String getRequestCookieCompliance() {
+        return requestCookieCompliance;
+    }
+
+    public void setRequestCookieCompliance(String requestCookieCompliance) {
+        this.requestCookieCompliance = requestCookieCompliance;
+    }
+
+    public String getResponseCookieCompliance() {
+        return responseCookieCompliance;
+    }
+
+    public void setResponseCookieCompliance(String responseCookieCompliance) {
+        this.responseCookieCompliance = responseCookieCompliance;
+    }
+
+    public boolean isUseArchiveNameAsContext() {
+        return useArchiveNameAsContext;
+    }
+
+    public void setUseArchiveNameAsContext(boolean useArchiveNameAsContext) {
+        this.useArchiveNameAsContext = useArchiveNameAsContext;
+    }
+
+    public void setInferredEncodings(String inferredEncodings) {
+        this.inferredEncodings = new HashMap<>();
+        String[] splittedLines = inferredEncodings.split(" ");
+        for (int i = 0; i < splittedLines.length; i += 2) {
+            if (i + 1 >= splittedLines.length) {
+                throw new ConfigurationException(String.format(
+                    "Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.",
+                    inferredEncodings));
+            }
+            this.inferredEncodings.put(splittedLines[i], splittedLines[i + 1]);
+        }
+    }
+
+    public boolean areInferredEncodings() {
+        return this.inferredEncodings != null;
+    }
+
+    public Map<String, String> getInferredEncodings() {
+        return inferredEncodings;
+    }
+    
+    public boolean isSsl() {
+        return ssl;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public String getKeystorePath() {
+        return keystorePath;
+    }
+
+    public void setKeystorePath(String keystorePath) {
+        this.keystorePath = keystorePath;
+    }
+
+    public String getKeystorePassword() {
+        return keystorePassword;
+    }
+
+    public void setKeystorePassword(String keystorePassword) {
+        this.keystorePassword = keystorePassword;
+    }
+
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
+
+    public void setTrustStorePath(String trustStorePath) {
+        this.trustStorePath = trustStorePath;
+    }
+
+    public String getTrustStorePassword() {
+        return trustStorePassword;
+    }
+
+    public void setTrustStorePassword(String trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
+    }
+
+    public boolean isSniRequired() {
+        return sniRequired;
+    }
+
+    public void setSniRequired(boolean sniRequired) {
+        this.sniRequired = sniRequired;
+    }
+
+    public boolean isSniHostCheck() {
+        return sniHostCheck;
+    }
+
+    public void setSniHostCheck(boolean sniHostCheck) {
+        this.sniHostCheck = sniHostCheck;
+    }
+
+    public boolean isNeedClientAuth() {
+        return needClientAuth;
+    }
+
+    public void setNeedClientAuth(boolean needClientAuth) {
+        this.needClientAuth = needClientAuth;
+    }
+
+    public boolean isH2cEnabled() {
+        return h2cEnabled;
+    }
+
+    public void setH2cEnabled(boolean h2cEnabled) {
+        this.h2cEnabled = h2cEnabled;
+    }
 }
+

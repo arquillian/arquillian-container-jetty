@@ -15,7 +15,7 @@
   <description>Jetty Embedded 10.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>10.0.6</version.jetty>
+    <version.jetty>10.0.9</version.jetty>
     <version.weld>3.1.8.Final</version.weld>
     <version.guava>13.0.1</version.guava>
 
@@ -103,14 +103,20 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.arquillian.junit</groupId>
-      <artifactId>arquillian-junit-container</artifactId>
+      <groupId>org.jboss.arquillian.junit5</groupId>
+      <artifactId>arquillian-junit5-container</artifactId>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
