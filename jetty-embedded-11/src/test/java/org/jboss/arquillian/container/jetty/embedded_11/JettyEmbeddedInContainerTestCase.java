@@ -40,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.jboss.arquillian.container.jetty.embedded_11.JettyEmbeddedClientTestCase.readAllAndClose;
@@ -118,9 +117,8 @@ public class JettyEmbeddedInContainerTestCase {
         try (Connection c = ds.getConnection()) {
             assertThat(c.getMetaData().getDatabaseProductName(), is("H2"));
         }
-        // FIXME this
-        //Assert.assertNotNull(testBean);
-        //Assert.assertEquals("Jetty", testBean.getName());
+        assertThat(testBean, notNullValue());
+        assertThat(testBean.getName(), is("Jetty"));
     }
 
     @Test
