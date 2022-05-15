@@ -16,7 +16,7 @@
 
   <properties>
     <version.jetty>11.0.9</version.jetty>
-    <version.weld>3.1.8.Final</version.weld>
+    <version.weld>4.0.3.Final</version.weld>
     <version.guava>13.0.1</version.guava>
 
     <!-- Jetty 10 need Java 11 -->
@@ -175,25 +175,11 @@
       <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Without this the shrinkwrap layer tries to download it in offline mode and fails -->
-<!--    <dependency>-->
-<!--      <groupId>org.jboss.spec.javax.el</groupId>-->
-<!--      <artifactId>jboss-el-api_3.0_spec</artifactId>-->
-<!--      <version>2.0.0.Final</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
 
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
-      <version>4.0.2.Final</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.el</groupId>
-          <artifactId>jboss-el-api_3.0_spec</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
