@@ -109,7 +109,7 @@ public class JettyEmbeddedClientTestCase {
     private final SslContextFactory.Client clientSslContextFactory = new SslContextFactory.Client();
 
     @BeforeEach
-    private void setup() throws Exception {
+    public void setup() throws Exception {
         clientSslContextFactory.setTrustAll(true);
         ClientConnector clientConnector = new ClientConnector();
         clientConnector.setSelectors(1);
@@ -119,7 +119,7 @@ public class JettyEmbeddedClientTestCase {
     }
 
     @AfterEach
-    private void shutdown() throws Exception {
+    public void shutdown() throws Exception {
         if(httpClient.isRunning()) {
             httpClient.stop();
         }
