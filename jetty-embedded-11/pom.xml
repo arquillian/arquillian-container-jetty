@@ -16,7 +16,7 @@
 
   <properties>
     <version.jetty>11.0.11</version.jetty>
-    <version.weld>4.0.3.Final</version.weld>
+    <version.weld>5.0.1.Final</version.weld>
     <version.guava>13.0.1</version.guava>
 
     <!-- Jetty 11 need Java 11 -->
