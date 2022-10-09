@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_11;
+package org.jboss.arquillian.container.jetty.embedded_12_ee9;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -29,24 +30,23 @@ import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.ee9.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.ee9.servlet.ServletHandler;
+import org.eclipse.jetty.ee9.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee9.webapp.WebAppContext;
 import org.jboss.arquillian.container.jetty.EnvUtil;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
@@ -134,7 +134,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     public void start() throws LifecycleException {
-        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "11.0");
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "12.0");
 
         try {
             server = new Server();
@@ -175,12 +175,16 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             deployer.addAppProvider(appProvider);
             server.addBean(deployer);
 
-            server.setHandler(new HandlerList(contexts, new DefaultHandler()));
+            // Handler Collection
+            Handler.Collection collection = new Handler.Collection(contexts, new DefaultHandler());
+            server.setHandler(collection);
 
             if (containerConfig.isRealmPropertiesFileSet()) {
                 String realmName = getRealmName();
                 HashLoginService hashUserRealm =
-                    new HashLoginService(realmName, containerConfig.getRealmProperties().getAbsolutePath());
+                    new HashLoginService(realmName,
+                        ResourceFactory.of(server)
+                            .newResource(Path.of(containerConfig.getRealmProperties().getAbsolutePath())));
                 server.addBean(hashUserRealm);
             }
 
@@ -243,6 +247,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         try {
             App app = appProvider.createApp(archive);
             deployer.removeApp(app);
+             appProvider.createContextHandler(app);
             WebAppContext webAppContext = getWebAppContext(app);
 
             if (containerConfig.areMimeTypesSet()) {
@@ -259,7 +264,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
             for (ServletHolder servlet : servletHandler.getServlets()) {
-                httpContext.add(new Servlet(servlet.getName(), servlet.getContextPath()));
+                httpContext.add(new Servlet(servlet.getName(), servlet.getServletContext().getContextPath()));
             }
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Exception e) {
@@ -268,14 +273,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     private WebAppContext getWebAppContext(App app) throws Exception {
-        ContextHandler handler = app.getContextHandler();
-        WebAppContext webAppContext;
-        if (handler instanceof WebAppContext) {
-            webAppContext = (WebAppContext) handler;
-        } else {
-            throw new DeploymentException("Deployment of raw ContextHandler's not supported by Arquillian");
+        if (app instanceof ArquillianAppProvider.ArchiveApp) {
+            return ((ArquillianAppProvider.ArchiveApp)app).getWebAppContext();
         }
-        return webAppContext;
+        throw new DeploymentException("Deployment of raw ContextHandler's not supported by Arquillian");
     }
 
     private MimeTypes getMimeTypes() {
