@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -49,24 +48,24 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
          * 
          * Use of java.io.tmpdir on Unix systems is unreliable (due to common /tmp dir cleanup processes)
          */
-        File systemDefaultTmpDir = new File(AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("java.io.tmpdir")));
+        File systemDefaultTmpDir = new File(System.getProperty("java.io.tmpdir"));
 
         // If running under maven + surefire, use information provided by surefire.
-        String baseDirVal = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("basedir"));
+        String baseDirVal = System.getProperty("basedir");
 
         File mavenTmpDir = null;
         if (baseDirVal != null) {
-            File baseDir = new File(baseDirVal);
-            if (baseDir.exists() && baseDir.isDirectory()) {
-                File targetDir = new File(baseDir, "target");
-                if (targetDir.exists() && targetDir.isDirectory()) {
+            Path baseDir = Paths.get(baseDirVal);
+            if (Files.isDirectory(baseDir)) {
+                File targetDir = new File(baseDir.toFile(), "target");
+                if (targetDir.isDirectory()) {
                     mavenTmpDir = new File(targetDir, "arquillian-jetty-temp");
                     mavenTmpDir.mkdirs();
                 }
             }
         }
 
-        if ((mavenTmpDir != null) && mavenTmpDir.exists() && mavenTmpDir.isDirectory()) {
+        if ((mavenTmpDir != null) && mavenTmpDir.isDirectory()) {
             EXPORT_DIR = mavenTmpDir;
         } else {
             EXPORT_DIR = systemDefaultTmpDir;
