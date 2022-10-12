@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_10_0.dtd">
+
+<Configure id="webAppCtx" class="org.eclipse.jetty.ee10.webapp.WebAppContext">
+
+  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+    <Arg>
+      <Ref refid="webAppCtx"/>
+    </Arg>
+    <Arg>type</Arg>
+    <Arg type="java.lang.String">Embedded</Arg>
+    <Arg type="boolean">true</Arg>
+  </New>
+  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+    <Arg>version</Arg>
+    <Arg type="java.lang.Integer">6</Arg>
+    <Arg type="boolean">true</Arg>
+  </New>
+  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+    <Arg>
+      <Ref refid="webAppCtx"/>
+    </Arg>
+    <Arg>jdbc/test</Arg>
+    <Arg>
+      <New class="org.h2.jdbcx.JdbcDataSource">
+        <Set name="URL">jdbc:h2:mem:test</Set>
+        <Set name="user">sa</Set>
+        <Set name="password">sa</Set>
+      </New>
+    </Arg>
+    <Arg type="boolean">true</Arg>
+  </New>
+</Configure>

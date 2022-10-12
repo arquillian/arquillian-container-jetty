@@ -37,6 +37,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -163,11 +164,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             deployer.addAppProvider(appProvider);
             server.addBean(deployer);
 
-            // Handler Tree
-            HandlerCollection handlers = new HandlerCollection();
-            handlers.addHandler(contexts);
-            handlers.addHandler(new DefaultHandler());
-            server.setHandler(handlers);
+            server.setHandler(new HandlerList(contexts, new DefaultHandler()));
 
             if (containerConfig.isRealmPropertiesFileSet()) {
                 String realmName = getRealmName();

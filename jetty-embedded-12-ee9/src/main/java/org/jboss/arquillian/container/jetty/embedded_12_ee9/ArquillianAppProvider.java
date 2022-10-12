@@ -1,27 +1,29 @@
-package org.jboss.arquillian.container.jetty.embedded_10;
+package org.jboss.arquillian.container.jetty.embedded_12_ee9;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.ee9.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
-import org.eclipse.jetty.deploy.util.FileID;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
+import org.eclipse.jetty.ee9.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.ee9.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee9.webapp.FragmentConfiguration;
+import org.eclipse.jetty.ee9.webapp.JettyWebXmlConfiguration;
+import org.eclipse.jetty.ee9.webapp.WebAppContext;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
@@ -53,17 +55,17 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
         File mavenTmpDir = null;
         if (baseDirVal != null) {
-            File baseDir = new File(baseDirVal);
-            if (baseDir.exists() && baseDir.isDirectory()) {
-                File targetDir = new File(baseDir, "target");
-                if (targetDir.exists() && targetDir.isDirectory()) {
+            Path baseDir = Paths.get(baseDirVal);
+            if (Files.isDirectory(baseDir)) {
+                File targetDir = new File(baseDir.toFile(), "target");
+                if (targetDir.isDirectory()) {
                     mavenTmpDir = new File(targetDir, "arquillian-jetty-temp");
                     mavenTmpDir.mkdirs();
                 }
             }
         }
 
-        if ((mavenTmpDir != null) && mavenTmpDir.exists() && mavenTmpDir.isDirectory()) {
+        if ((mavenTmpDir != null) && mavenTmpDir.isDirectory()) {
             EXPORT_DIR = mavenTmpDir;
         } else {
             EXPORT_DIR = systemDefaultTmpDir;
@@ -77,9 +79,11 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
     private final JettyEmbeddedConfiguration config;
     private DeploymentManager deploymentManager;
+    private final Collection<WebAppContextProcessor> webAppContextProcessors;
 
-    public ArquillianAppProvider(JettyEmbeddedConfiguration config) {
+    public ArquillianAppProvider(JettyEmbeddedConfiguration config, Collection<WebAppContextProcessor> webAppContextProcessors) {
         this.config = config;
+        this.webAppContextProcessors = webAppContextProcessors;
     }
 
     protected App createApp(final Archive<?> archive) {
@@ -122,19 +126,57 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         URI uri = exported.toURI();
         LOG.info("Webapp archive location: " + uri.toASCIIString());
 
-        return new App(deploymentManager, this, uri.toASCIIString());
+        return new ArchiveApp(deploymentManager, this, Path.of(uri), archive);
+    }
+
+    static class ArchiveApp extends App  {
+        private final Archive<?> archive;
+
+        private WebAppContext webAppContext;
+
+        public ArchiveApp(DeploymentManager manager, AppProvider provider, Path originId, Archive<?> archive) {
+            super(manager, provider, originId);
+            this.archive = archive;
+        }
+
+        protected WebAppContext getWebAppContext() {
+            return this.webAppContext;
+        }
+
+        protected void setWebAppContext(WebAppContext webAppContext) {
+            this.webAppContext = webAppContext;
+        }
+
+        private ArchiveApp webAppContext(WebAppContext webAppContext) {
+            this.webAppContext = webAppContext;
+            return this;
+        }
+    }
+
+    private static boolean isWebArchiveFile(Path path) {
+        if (!path.toFile().isFile()) {
+            return false;
+        } else {
+            String name = path.toFile().getName().toLowerCase(Locale.ENGLISH);
+            return name.endsWith(".war") || name.endsWith(".jar");
+        }
     }
 
     @Override
-    public ContextHandler createContextHandler(final App app) throws Exception {
-        Resource resource = Resource.newResource(app.getOriginId());
-        File file = resource.getFile();
+    public ContextHandler createContextHandler(App app) throws Exception {
+        if (app instanceof ArquillianAppProvider.ArchiveApp) {
+            if(((ArchiveApp)app).webAppContext!=null) {
+                return ((ArchiveApp)app).webAppContext.getCoreContextHandler();
+            }
+        }
+        Resource resource = ResourceFactory.root().newResource(app.getPath());
+        Path file = resource.getPath();
         if (!resource.exists())
             throw new IllegalStateException("App resouce does not exist " + resource);
 
-        String context = file.getName();
+        String context = file.toFile().getName();
 
-        if (FileID.isWebArchiveFile(file)) {
+        if (isWebArchiveFile(file)) {
             // Context Path is the same as the archive.
             context = context.substring(0, context.length() - 4);
         } else {
@@ -150,7 +192,6 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setDisplayName(context);
         webAppContext.setLogUrlOnStart(true);
-
 
         String configuredConfigurationClasses = config.getConfigurationClasses();
         if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
@@ -177,7 +218,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         } else if (context.toLowerCase(Locale.ENGLISH).startsWith("root-")) {
             int dash = context.toLowerCase(Locale.ENGLISH).indexOf('-');
             String virtual = context.substring(dash + 1);
-            webAppContext.setVirtualHosts(new String[] {virtual});
+            webAppContext.setVirtualHosts(new String[]{virtual});
             context = URIUtil.SLASH;
         }
 
@@ -187,7 +228,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         }
 
         webAppContext.setContextPath(context);
-        webAppContext.setWar(file.getAbsolutePath());
+        webAppContext.setWar(file.toFile().getAbsolutePath());
         if (config.hasDefaultsDescriptor()) {
             webAppContext.setDefaultsDescriptor(config.getDefaultsDescriptor().toASCIIString());
         }
@@ -203,7 +244,17 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
              */
             webAppContext.setAttribute(WebAppContext.BASETEMPDIR, config.getTempDirectory());
         }
-        return webAppContext;
+
+        webAppContextProcessors.forEach(processor -> processor.process(webAppContext, ((ArchiveApp)app).archive));
+
+        ((ArchiveApp)app).setWebAppContext(webAppContext);
+
+        return webAppContext.getCoreContextHandler();
+    }
+
+    @Override
+    public String getEnvironmentName() {
+        return "ee9";
     }
 
     @Override

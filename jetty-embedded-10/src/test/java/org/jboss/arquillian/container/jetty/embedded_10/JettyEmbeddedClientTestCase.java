@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 /**
- * Client test case for the Jetty Embedded 9 container
+ * Client test case for the Jetty Embedded 10 container
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  * @author Dan Allen

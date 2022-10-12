@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -20,7 +17,6 @@ import org.eclipse.jetty.deploy.util.FileID;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
@@ -29,7 +25,6 @@ import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvider {
     private static final Logger LOG = Logger.getLogger(ArquillianAppProvider.class.getName());
@@ -52,10 +47,10 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
          * 
          * Use of java.io.tmpdir on Unix systems is unreliable (due to common /tmp dir cleanup processes)
          */
-        File systemDefaultTmpDir = new File(AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("java.io.tmpdir")));
+        File systemDefaultTmpDir = new File(System.getProperty("java.io.tmpdir"));
 
         // If running under maven + surefire, use information provided by surefire.
-        String baseDirVal = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("basedir"));
+        String baseDirVal = System.getProperty("basedir");
 
         File mavenTmpDir = null;
         if (baseDirVal != null) {

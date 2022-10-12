@@ -41,10 +41,12 @@
     <version.jsp-api>2.2</version.jsp-api>
     <version.servlet-api>4.0.1</version.servlet-api>
     <version.h2>2.1.214</version.h2>
+    <version.slf4j>2.0.0</version.slf4j>
 
     <!-- override from parent -->
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.release>8</maven.compiler.release>
 
   </properties>
 
@@ -124,8 +126,13 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.slf4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>2.0.3</version>
+        <version>${version.slf4j}</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -139,6 +146,19 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>jetty.snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
@@ -187,6 +207,8 @@
     <module>jetty-embedded-9</module>
     <module>jetty-embedded-10</module>
     <module>jetty-embedded-11</module>
+    <module>jetty-embedded-12-ee10</module>
+    <module>jetty-embedded-12-ee9</module>
     <module>jetty-common</module>
   </modules>
 
