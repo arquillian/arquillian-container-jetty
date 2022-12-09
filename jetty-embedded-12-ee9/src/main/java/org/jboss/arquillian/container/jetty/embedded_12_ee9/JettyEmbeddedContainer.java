@@ -19,8 +19,6 @@ package org.jboss.arquillian.container.jetty.embedded_12_ee9;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.eclipse.jetty.deploy.App;
@@ -28,7 +26,6 @@ import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.ee9.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -189,7 +186,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             }
 
             if (containerConfig.areInferredEncodings()) {
-                containerConfig.getInferredEncodings().forEach((s, s2) -> MimeTypes.getInferredEncodings().put(s, s2));
+                containerConfig.getInferredEncodings().forEach((s, s2) -> server.getMimeTypes().addInferred(s, s2));
             }
 
             server.setDumpAfterStart(containerConfig.isDumpServerAfterStart());
@@ -251,8 +248,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             WebAppContext webAppContext = getWebAppContext(app);
 
             if (containerConfig.areMimeTypesSet()) {
-                MimeTypes mimeTypes = getMimeTypes();
-                webAppContext.setMimeTypes(mimeTypes);
+                containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addInferred(s, s2));
             }
 
             deployer.addApp(app);
@@ -277,15 +273,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             return ((ArquillianAppProvider.ArchiveApp)app).getWebAppContext();
         }
         throw new DeploymentException("Deployment of raw ContextHandler's not supported by Arquillian");
-    }
-
-    private MimeTypes getMimeTypes() {
-        Map<String, String> configuredMimeTypes = containerConfig.getMimeTypes();
-        Set<Map.Entry<String, String>> entries = configuredMimeTypes.entrySet();
-        MimeTypes mimeTypes = new MimeTypes();
-        entries.forEach(stringStringEntry ->
-            mimeTypes.addMimeMapping(stringStringEntry.getKey(), stringStringEntry.getValue()));
-        return mimeTypes;
     }
 
     public void undeploy(Archive<?> archive) throws DeploymentException {

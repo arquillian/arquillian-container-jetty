@@ -112,7 +112,7 @@ public class JettyEmbeddedInContainerTestCase {
         assertThat(containerType, notNullValue());
         assertThat(containerType, is("Embedded"));
         assertThat(ds, notNullValue());
-
+        org.jboss.arquillian.testenricher.cdi.container.BeanManagerProducer f;
         try (Connection c = ds.getConnection()) {
             assertThat(c.getMetaData().getDatabaseProductName(), is("H2"));
         }

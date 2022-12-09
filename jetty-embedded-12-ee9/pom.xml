@@ -15,8 +15,7 @@
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>12.0.0.alpha2</version.jetty>
-    <version.weld>4.0.3.Final</version.weld>
+    <version.weld>5.1.0.Final</version.weld>
     <version.guava>13.0.1</version.guava>
 <!--    <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>-->
 
@@ -37,14 +36,14 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>${version.jetty}</version>
+        <version>${jetty12.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty.ee9</groupId>
         <artifactId>jetty-ee9-bom</artifactId>
-        <version>${version.jetty}</version>
+        <version>${jetty12.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -156,7 +155,7 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.1</version>
     </dependency>
 
     <!-- Weld servlet required for testing CDI injections -->

@@ -40,6 +40,8 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
      */
     private static final File EXPORT_DIR;
 
+    private static final String SLASH = "/";
+
     static {
         /*
          * Use of java.io.tmpdir Should be a last-resort fallback for temp directory.
@@ -214,12 +216,12 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
         // special case of archive (or dir) named "root" is / context
         if (context.equalsIgnoreCase("root")) {
-            context = URIUtil.SLASH;
+            context = SLASH;
         } else if (context.toLowerCase(Locale.ENGLISH).startsWith("root-")) {
             int dash = context.toLowerCase(Locale.ENGLISH).indexOf('-');
             String virtual = context.substring(dash + 1);
             webAppContext.setVirtualHosts(new String[]{virtual});
-            context = URIUtil.SLASH;
+            context = SLASH;
         }
 
         // Ensure "/" is Prepended to all context paths.
