@@ -161,6 +161,7 @@
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <version>4.0.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -227,7 +228,7 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <id>ban-javax-servlet-api</id>
+            <id>ban-javax-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
