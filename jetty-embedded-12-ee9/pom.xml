@@ -206,6 +206,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>jakarta.el</groupId>
+      <artifactId>jakarta.el-api:jar</artifactId>
+      <version>5.0.1</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
