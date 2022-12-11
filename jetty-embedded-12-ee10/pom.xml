@@ -15,8 +15,8 @@
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
+    <!-- when upgrading check if this fix JettyEmbeddedInContainerTestCase#shouldBeAbleToInjectMembersIntoTestClass -->
     <version.weld>5.1.0.Final</version.weld>
-    <version.guava>13.0.1</version.guava>
     <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>
 
     <!-- Jetty 12 need Java 17 -->
