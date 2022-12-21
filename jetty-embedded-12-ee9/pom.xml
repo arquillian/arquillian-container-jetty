@@ -15,9 +15,8 @@
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>12.0.0.alpha2</version.jetty>
-    <version.weld>4.0.3.Final</version.weld>
-    <version.guava>13.0.1</version.guava>
+    <!-- when upgrading check if this fix JettyEmbeddedInContainerTestCase#shouldBeAbleToInjectMembersIntoTestClass -->
+    <version.weld>5.1.0.Final</version.weld>
 <!--    <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>-->
 
     <!-- Jetty 12 need Java 17 -->
@@ -37,14 +36,14 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>${version.jetty}</version>
+        <version>${jetty12.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty.ee9</groupId>
         <artifactId>jetty-ee9-bom</artifactId>
-        <version>${version.jetty}</version>
+        <version>${jetty12.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -156,7 +155,7 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.0</version>
+      <version>4.0.1</version>
     </dependency>
 
     <!-- Weld servlet required for testing CDI injections -->
@@ -204,6 +203,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.el</groupId>
+      <artifactId>jakarta.el-api</artifactId>
+      <version>5.0.1</version>
       <scope>test</scope>
     </dependency>
 
