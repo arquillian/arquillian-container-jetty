@@ -224,7 +224,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
              * instead of setting the WebAppContext.setTempDirectory(File). If we used .setTempDirectory(File) all webapps will wind up in the same temp / work
              * directory, overwriting each others work.
              */
-            webAppContext.setAttribute(WebAppContext.BASETEMPDIR, config.getTempDirectory());
+            webAppContext.setAttribute(WebAppContext.TEMP_DIR, config.getTempDirectory());
         }
 
         webAppContextProcessors.forEach(processor -> processor.process(webAppContext, ((ArchiveApp)app).archive));

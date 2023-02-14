@@ -173,7 +173,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server.addBean(deployer);
 
             // Handler Collection
-            Handler.Collection collection = new Handler.Collection(contexts, new DefaultHandler());
+            Handler.Collection collection = new Handler.Sequence(contexts, new DefaultHandler());
             server.setHandler(collection);
 
             if (containerConfig.isRealmPropertiesFileSet()) {
