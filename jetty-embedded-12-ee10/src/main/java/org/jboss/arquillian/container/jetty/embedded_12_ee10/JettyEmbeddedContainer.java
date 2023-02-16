@@ -299,10 +299,10 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
             }
             if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
+                httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
             }
             if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
+                httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
             }
         }
 
