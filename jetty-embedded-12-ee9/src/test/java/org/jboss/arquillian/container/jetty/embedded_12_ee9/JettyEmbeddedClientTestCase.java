@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
