@@ -40,7 +40,7 @@
     <version.glassfish.el>2.2</version.glassfish.el>
     <version.jsp-api>2.2</version.jsp-api>
     <version.servlet-api>4.0.1</version.servlet-api>
-    <version.h2>2.1.214</version.h2>
+    <version.h2>2.2.220</version.h2>
     <version.slf4j>2.0.0</version.slf4j>
 
     <!-- override from parent -->
