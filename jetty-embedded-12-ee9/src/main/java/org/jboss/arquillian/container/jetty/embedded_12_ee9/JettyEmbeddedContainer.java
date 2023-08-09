@@ -27,7 +27,7 @@ import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.ee9.security.HashLoginService;
+import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
