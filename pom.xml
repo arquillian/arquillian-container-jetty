@@ -15,7 +15,7 @@
   <!-- Artifact Configuration -->
   <groupId>org.jboss.arquillian.container</groupId>
   <artifactId>arquillian-parent-jetty</artifactId>
-  <version>2.0.0.Final</version>
+  <version>2.0.1.Final-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Arquillian Container Parent Jetty</name>
   <description>Jetty Container integrations for the Arquillian Project</description>
@@ -24,7 +24,7 @@
     <connection>scm:git:git://git@github.com:arquillian/arquillian-container-jetty.git</connection>
     <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-jetty.git</developerConnection>
     <url>git://github.com/arquillian/arquillian-container-jetty.git</url>
-    <tag>2.0.0.Final</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <!-- Properties -->
