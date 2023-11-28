@@ -248,7 +248,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             WebAppContext webAppContext = getWebAppContext(app);
 
             if (containerConfig.areMimeTypesSet()) {
-                containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addInferred(s, s2));
+                containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
             }
 
             deployer.addApp(app);

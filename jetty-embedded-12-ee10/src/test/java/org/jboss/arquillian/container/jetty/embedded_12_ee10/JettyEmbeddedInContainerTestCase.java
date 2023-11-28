@@ -125,8 +125,8 @@ public class JettyEmbeddedInContainerTestCase {
         String body = JettyEmbeddedClientTestCase.readAllAndClose(new URL(encodingUrl, MyEncodingServlet.URL_PATTERN).openStream());
 
         assertThat(
-            "Should contains iso-8859-1",
+            "Should contains ISO-8859-1",
             body,
-            StringContains.containsString("iso-8859-1"));
+            StringContains.containsStringIgnoringCase("ISO-8859-1"));
     }
 }
