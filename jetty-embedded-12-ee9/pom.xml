@@ -16,7 +16,7 @@
 
   <properties>
     <!-- when upgrading check if this fix JettyEmbeddedInContainerTestCase#shouldBeAbleToInjectMembersIntoTestClass -->
-    <version.weld>5.1.0.Final</version.weld>
+    <version.weld>5.1.2.Final</version.weld>
 <!--    <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>-->
 
     <!-- Jetty 12 need Java 17 -->
