@@ -31,7 +31,7 @@
   <properties>
 
     <!-- Versioning -->
-    <version.arquillian_core>1.7.1.Final</version.arquillian_core>
+    <version.arquillian_core>1.8.0.Final</version.arquillian_core>
 
     <version.shrinkwrap>3.2.1</version.shrinkwrap>
 
