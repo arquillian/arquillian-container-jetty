@@ -69,12 +69,10 @@ import jakarta.servlet.ServletContext;
  * Jetty Embedded 11.x container for the Arquillian project.
  * </p>
  * <p>
- * <p>
  * This container only supports a WebArchive deployment. The context path of the deployed application is always set to
  * "/test", which is expected by the
  * Arquillian servlet protocol.
  * </p>
- * <p>
  * <p>
  * Another known issue is that the container configuration process logs an exception when running in-container. However,
  * the container is still configured
@@ -291,20 +289,19 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @return HttpConfiguration
      */
     private HttpConfiguration getHttpConfiguration() {
-        HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-        if (httpConfig == null) {
-            httpConfig = new HttpConfiguration();
-            if (this.containerConfig.isHeaderBufferSizeSet()) {
-                httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
-                httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
-            }
-            if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
-            }
-            if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
-            }
+        HttpConfiguration httpConfig = new HttpConfiguration();
+
+        if (this.containerConfig.isHeaderBufferSizeSet()) {
+            httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+            httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
         }
+        if(this.containerConfig.getRequestCookieCompliance()!=null) {
+            httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
+        }
+        if(this.containerConfig.getResponseCookieCompliance()!=null) {
+            httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
+        }
+
 
         SecureRequestCustomizer secureRequestCustomizer = httpConfig.getCustomizer(SecureRequestCustomizer.class);
         if (secureRequestCustomizer == null) {

@@ -36,7 +36,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -130,19 +129,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server = new Server();
 
             // Setup HTTP Configuration
-            HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-            if (httpConfig == null) {
-                httpConfig = new HttpConfiguration();
-                if (this.containerConfig.isHeaderBufferSizeSet()) {
-                    httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
-                    httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
-                }
-                if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                    httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
-                }
-                if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                    httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
-                }
+            HttpConfiguration httpConfig = new HttpConfiguration();
+
+            if (this.containerConfig.isHeaderBufferSizeSet()) {
+                httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+                httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
+            }
+            if(this.containerConfig.getRequestCookieCompliance()!=null) {
+                httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
+            }
+            if(this.containerConfig.getResponseCookieCompliance()!=null) {
+                httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
             }
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);

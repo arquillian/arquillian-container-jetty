@@ -164,19 +164,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             }
 
             // Setup HTTP Configuration
-            HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-            if (httpConfig == null) {
-                httpConfig = new HttpConfiguration();
-                if (this.containerConfig.isHeaderBufferSizeSet()) {
-                    httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
-                    httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
-                }
-                if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                    httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
-                }
-                if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                    httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
-                }
+            HttpConfiguration httpConfig = new HttpConfiguration();
+
+            if (this.containerConfig.isHeaderBufferSizeSet()) {
+                httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+                httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
+            }
+            if(this.containerConfig.getRequestCookieCompliance()!=null) {
+                httpConfig.setRequestCookieCompliance(CookieCompliance.valueOf(containerConfig.getRequestCookieCompliance()));
+            }
+            if(this.containerConfig.getResponseCookieCompliance()!=null) {
+                httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
             }
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);

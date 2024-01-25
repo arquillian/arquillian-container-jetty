@@ -61,12 +61,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
     private boolean dumpServerAfterStart = false;
 
     /**
-     * Optional HttpConfiguration for the ServerConnector that Arquillian
-     * creates.
-     */
-    private HttpConfiguration httpConfiguration;
-
-    /**
      * Idle Timeout (in milliseconds) for active connections.
      * <p>
      * Default: 30,000ms
@@ -84,10 +78,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
 
     public URI getDefaultsDescriptor() {
         return defaultsDescriptor;
-    }
-
-    public HttpConfiguration getHttpConfiguration() {
-        return httpConfiguration;
     }
 
     public long getIdleTimeoutMillis() {
@@ -116,10 +106,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
 
     public void setDumpServerAfterStart(boolean serverDumpAfterStart) {
         this.dumpServerAfterStart = serverDumpAfterStart;
-    }
-
-    public void setHttpConfiguration(HttpConfiguration httpConfiguration) {
-        this.httpConfiguration = httpConfiguration;
     }
 
     public void setIdleTimeoutMillis(long milliseconds) {

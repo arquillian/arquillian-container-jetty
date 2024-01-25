@@ -46,7 +46,7 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
     /**
      * Classloader Search Order behavior.
      * <p>
-     * Default for Arquillian is {@link JAVA_SPEC}.
+     * Default for Arquillian is {@link ClassLoaderBehavior#JAVA_SPEC}.
      */
     private ClassLoaderBehavior classloaderBehavior = ClassLoaderBehavior.JAVA_SPEC;
 
@@ -59,12 +59,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
      * Dump, to System.err, the server state tree after the server has successfully started up.
      */
     private boolean dumpServerAfterStart = false;
-
-    /**
-     * Optional HttpConfiguration for the ServerConnector that Arquillian
-     * creates.
-     */
-    private HttpConfiguration httpConfiguration;
 
     /**
      * Idle Timeout (in milliseconds) for active connections.
@@ -84,10 +78,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
 
     public URI getDefaultsDescriptor() {
         return defaultsDescriptor;
-    }
-
-    public HttpConfiguration getHttpConfiguration() {
-        return httpConfiguration;
     }
 
     public long getIdleTimeoutMillis() {
@@ -116,10 +106,6 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
 
     public void setDumpServerAfterStart(boolean serverDumpAfterStart) {
         this.dumpServerAfterStart = serverDumpAfterStart;
-    }
-
-    public void setHttpConfiguration(HttpConfiguration httpConfiguration) {
-        this.httpConfiguration = httpConfiguration;
     }
 
     public void setIdleTimeoutMillis(long milliseconds) {

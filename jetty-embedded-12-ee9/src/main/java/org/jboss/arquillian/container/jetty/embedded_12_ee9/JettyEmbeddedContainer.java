@@ -290,20 +290,19 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
      * @return HttpConfiguration
      */
     private HttpConfiguration getHttpConfiguration() {
-        HttpConfiguration httpConfig = containerConfig.getHttpConfiguration();
-        if (httpConfig == null) {
-            httpConfig = new HttpConfiguration();
-            if (this.containerConfig.isHeaderBufferSizeSet()) {
-                httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
-                httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
-            }
-            if(this.containerConfig.getRequestCookieCompliance()!=null) {
-                httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
-            }
-            if(this.containerConfig.getResponseCookieCompliance()!=null) {
-                httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
-            }
+        HttpConfiguration httpConfig = new HttpConfiguration();
+
+        if (this.containerConfig.isHeaderBufferSizeSet()) {
+            httpConfig.setRequestHeaderSize(containerConfig.getHeaderBufferSize());
+            httpConfig.setResponseHeaderSize(containerConfig.getHeaderBufferSize());
         }
+        if(this.containerConfig.getRequestCookieCompliance()!=null) {
+            httpConfig.setRequestCookieCompliance(CookieCompliance.from(containerConfig.getRequestCookieCompliance()));
+        }
+        if(this.containerConfig.getResponseCookieCompliance()!=null) {
+            httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
+        }
+
 
         SecureRequestCustomizer secureRequestCustomizer = httpConfig.getCustomizer(SecureRequestCustomizer.class);
         if (secureRequestCustomizer == null) {
