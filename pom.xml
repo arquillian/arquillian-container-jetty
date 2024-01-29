@@ -33,7 +33,7 @@
     <!-- Versioning -->
     <version.arquillian_core>1.8.0.Final</version.arquillian_core>
 
-    <version.shrinkwrap>3.2.1</version.shrinkwrap>
+    <version.shrinkwrap>3.3.0</version.shrinkwrap>
 
     <version.weld>3.1.8.Final</version.weld>
     <version.cdi-api>2.0</version.cdi-api>
