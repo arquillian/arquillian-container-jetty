@@ -40,6 +40,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     private Map<String, String> inferredEncodings;
 
+    private Map<String, String> httpConfigurationProperties;
+
     private int headerBufferSize = 0;
 
     private File realmProperties;
@@ -196,7 +198,7 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
         for (int i = 0; i < splittedLines.length; i += 2) {
             if (i + 1 >= splittedLines.length) {
                 throw new ConfigurationException(String.format(
-                    "Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.",
+                    "InferredEncodings definition should follow the format <extension> <type>[ <extension> <type>]*, for example text/html iso-8859-1 but %s definition has been found.",
                     inferredEncodings));
             }
             this.inferredEncodings.put(splittedLines[i], splittedLines[i + 1]);
@@ -281,6 +283,23 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     public void setH2cEnabled(boolean h2cEnabled) {
         this.h2cEnabled = h2cEnabled;
+    }
+
+    public Map<String, String> getHttpConfigurationProperties() {
+        return httpConfigurationProperties;
+    }
+
+    public void setHttpConfigurationProperties(String httpConfigurationProperties) {
+        this.httpConfigurationProperties = new HashMap<>();
+        String[] splittedLines = httpConfigurationProperties.split(" ");
+        for (int i = 0; i < splittedLines.length; i += 2) {
+            if (i + 1 >= splittedLines.length) {
+                throw new ConfigurationException(String.format(
+                    "httpConfigurationProperties should follow the format <property name> <property value>, for example relativeRedirectAllowed false but %s definition has been found.",
+                    httpConfigurationProperties));
+            }
+            this.httpConfigurationProperties.put(splittedLines[i], splittedLines[i + 1]);
+        }
     }
 }
 

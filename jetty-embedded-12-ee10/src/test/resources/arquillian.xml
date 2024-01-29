@@ -20,6 +20,9 @@
         </property>
         <property name="h2cEnabled">true</property>
 <!--        <property name="dumpServerAfterStart">true</property>-->
+        <property name="httpConfigurationProperties">
+          relativeRedirectAllowed false
+        </property>
       </configuration>
     </container>
 
