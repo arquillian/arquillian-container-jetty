@@ -22,7 +22,6 @@ import org.jboss.arquillian.container.spi.client.container.ContainerConfiguratio
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
