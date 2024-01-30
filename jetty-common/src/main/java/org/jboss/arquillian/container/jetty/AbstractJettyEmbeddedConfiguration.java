@@ -308,7 +308,6 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
         }
         this.httpConfigurationProperties = props.stringPropertyNames()
                                             .stream()
-                                            .map(Objects::toString)
                                             .collect(Collectors.toMap(Function.identity(), props::getProperty));
 
     }
