@@ -20,8 +20,14 @@ import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A {@link org.jboss.arquillian.container.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded
@@ -39,6 +45,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     private Map<String, String> mimeTypes;
 
     private Map<String, String> inferredEncodings;
+
+    private Map<String, String> httpConfigurationProperties;
 
     private int headerBufferSize = 0;
 
@@ -196,7 +204,7 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
         for (int i = 0; i < splittedLines.length; i += 2) {
             if (i + 1 >= splittedLines.length) {
                 throw new ConfigurationException(String.format(
-                    "Mime Type definition should follow the format <extension> <type>[ <extension> <type>]*, for example js application/javascript but %s definition has been found.",
+                    "InferredEncodings definition should follow the format <extension> <type>[ <extension> <type>]*, for example text/html iso-8859-1 but %s definition has been found.",
                     inferredEncodings));
             }
             this.inferredEncodings.put(splittedLines[i], splittedLines[i + 1]);
@@ -281,6 +289,27 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     public void setH2cEnabled(boolean h2cEnabled) {
         this.h2cEnabled = h2cEnabled;
+    }
+
+    public Map<String, String> getHttpConfigurationProperties() {
+        return httpConfigurationProperties;
+    }
+
+    public void setHttpConfigurationProperties(String httpConfigurationProperties) {
+
+        Properties props = new Properties();
+        try (StringReader reader = new StringReader(httpConfigurationProperties)) {
+            try {
+                props.load(reader);
+            } catch (IOException e) {
+                // this should not happen
+                throw new RuntimeException(e);
+            }
+        }
+        this.httpConfigurationProperties = props.stringPropertyNames()
+                                            .stream()
+                                            .collect(Collectors.toMap(Function.identity(), props::getProperty));
+
     }
 }
 

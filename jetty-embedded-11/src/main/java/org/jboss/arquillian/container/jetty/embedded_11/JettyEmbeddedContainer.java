@@ -17,11 +17,15 @@
 package org.jboss.arquillian.container.jetty.embedded_11;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
@@ -45,6 +49,7 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.TypeUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jboss.arquillian.container.jetty.EnvUtil;
@@ -312,6 +317,20 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             if(this.containerConfig.getResponseCookieCompliance()!=null) {
                 httpConfig.setResponseCookieCompliance(CookieCompliance.from(containerConfig.getResponseCookieCompliance()));
             }
+
+            if(containerConfig.getHttpConfigurationProperties()!=null){
+                for(Map.Entry<String, String> propertyEntry:containerConfig.getHttpConfigurationProperties().entrySet()){
+                    Method setter = ReflectionUtils.getSetter(propertyEntry.getKey(), httpConfig.getClass());
+                    Class<?> setterClass = ReflectionUtils.getSetterType(setter);
+                    Object value = TypeUtil.valueOf(setterClass, propertyEntry.getValue());
+                    try {
+                        setter.invoke(httpConfig, value);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        log.log(Level.WARNING, "Ignore error setting field with name " + propertyEntry.getKey() + " with value " + propertyEntry.getValue(), e);
+                    }
+                }
+            }
+
         }
 
         SecureRequestCustomizer secureRequestCustomizer = httpConfig.getCustomizer(SecureRequestCustomizer.class);

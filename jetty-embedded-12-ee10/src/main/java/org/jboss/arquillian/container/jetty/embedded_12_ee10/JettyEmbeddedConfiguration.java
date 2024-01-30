@@ -46,7 +46,7 @@ public class JettyEmbeddedConfiguration extends AbstractJettyEmbeddedConfigurati
     /**
      * Classloader Search Order behavior.
      * <p>
-     * Default for Arquillian is {@link JAVA_SPEC}.
+     * Default for Arquillian is {@link ClassLoaderBehavior#JAVA_SPEC}.
      */
     private ClassLoaderBehavior classloaderBehavior = ClassLoaderBehavior.JAVA_SPEC;
 

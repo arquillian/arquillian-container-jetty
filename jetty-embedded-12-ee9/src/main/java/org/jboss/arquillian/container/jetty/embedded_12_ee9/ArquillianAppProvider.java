@@ -17,7 +17,6 @@ import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.ee9.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.ee9.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.ee9.webapp.FragmentConfiguration;

@@ -17,11 +17,15 @@
 package org.jboss.arquillian.container.jetty.embedded_9;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
@@ -43,6 +47,7 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.TypeUtil;
 import org.eclipse.jetty.util.log.JavaUtilLog;
 import org.eclipse.jetty.webapp.Configuration.ClassList;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
@@ -176,6 +181,18 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 }
                 if(this.containerConfig.getResponseCookieCompliance()!=null) {
                     httpConfig.setResponseCookieCompliance(CookieCompliance.valueOf(containerConfig.getResponseCookieCompliance()));
+                }
+                if(containerConfig.getHttpConfigurationProperties()!=null){
+                    for(Map.Entry<String, String> propertyEntry:containerConfig.getHttpConfigurationProperties().entrySet()){
+                        Method setter = ReflectionUtils.getSetter(propertyEntry.getKey(), httpConfig.getClass());
+                        Class<?> setterClass = ReflectionUtils.getSetterType(setter);
+                        Object value = TypeUtil.valueOf(setterClass, propertyEntry.getValue());
+                        try {
+                            setter.invoke(httpConfig, value);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            log.log(Level.WARNING, "Ignore error setting field with name " + propertyEntry.getKey() + " with value " + propertyEntry.getValue(), e);
+                        }
+                    }
                 }
             }
 
