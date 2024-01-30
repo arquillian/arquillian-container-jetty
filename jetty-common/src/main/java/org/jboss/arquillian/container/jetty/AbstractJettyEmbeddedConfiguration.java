@@ -20,8 +20,15 @@ import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A {@link org.jboss.arquillian.container.spi.client.container.ContainerConfiguration} common base for the Jetty Embedded
@@ -290,16 +297,21 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
     }
 
     public void setHttpConfigurationProperties(String httpConfigurationProperties) {
-        this.httpConfigurationProperties = new HashMap<>();
-        String[] splittedLines = httpConfigurationProperties.split(" ");
-        for (int i = 0; i < splittedLines.length; i += 2) {
-            if (i + 1 >= splittedLines.length) {
-                throw new ConfigurationException(String.format(
-                    "httpConfigurationProperties should follow the format <property name> <property value>, for example relativeRedirectAllowed false but %s definition has been found.",
-                    httpConfigurationProperties));
+
+        Properties props = new Properties();
+        try (StringReader reader = new StringReader(httpConfigurationProperties)) {
+            try {
+                props.load(reader);
+            } catch (IOException e) {
+                // this should not happen
+                throw new RuntimeException(e);
             }
-            this.httpConfigurationProperties.put(splittedLines[i], splittedLines[i + 1]);
         }
+        this.httpConfigurationProperties = props.stringPropertyNames()
+                                            .stream()
+                                            .map(Objects::toString)
+                                            .collect(Collectors.toMap(Function.identity(), props::getProperty));
+
     }
 }
 
