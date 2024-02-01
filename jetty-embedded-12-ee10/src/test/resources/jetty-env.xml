@@ -3,7 +3,7 @@
 
 <Configure id="webAppCtx" class="org.eclipse.jetty.ee10.webapp.WebAppContext">
 
-  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
     <Arg>
       <Ref refid="webAppCtx"/>
     </Arg>
@@ -11,12 +11,12 @@
     <Arg type="java.lang.String">Embedded</Arg>
     <Arg type="boolean">true</Arg>
   </New>
-  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
     <Arg>version</Arg>
     <Arg type="java.lang.Integer">6</Arg>
     <Arg type="boolean">true</Arg>
   </New>
-  <New class="org.eclipse.jetty.ee10.plus.jndi.EnvEntry">
+  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
     <Arg>
       <Ref refid="webAppCtx"/>
     </Arg>
