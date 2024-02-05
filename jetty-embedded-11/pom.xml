@@ -15,7 +15,7 @@
   <description>Jetty Embedded 11.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>11.0.18</version.jetty>
+    <version.jetty>12.0.6</version.jetty>
     <version.weld>4.0.3.Final</version.weld>
 
     <!-- Jetty 11 need Java 11 -->
