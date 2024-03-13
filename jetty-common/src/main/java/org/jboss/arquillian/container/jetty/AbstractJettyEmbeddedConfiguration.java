@@ -85,6 +85,8 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
 
     private boolean needClientAuth;
 
+    private boolean crossContextDispatchSupported;
+
     /*
      * (non-Javadoc)
      *
@@ -310,6 +312,14 @@ public abstract class AbstractJettyEmbeddedConfiguration implements ContainerCon
                                             .stream()
                                             .collect(Collectors.toMap(Function.identity(), props::getProperty));
 
+    }
+
+    public boolean isCrossContextDispatchSupported() {
+        return crossContextDispatchSupported;
+    }
+
+    public void setCrossContextDispatchSupported(boolean crossContextDispatchSupported) {
+        this.crossContextDispatchSupported = crossContextDispatchSupported;
     }
 }
 
