@@ -193,7 +193,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setDisplayName(context);
         webAppContext.setLogUrlOnStart(true);
-
+        webAppContext.setCrossContextDispatchSupported(config.isCrossContextDispatchSupported());
         String configuredConfigurationClasses = config.getConfigurationClasses();
         if (configuredConfigurationClasses != null && configuredConfigurationClasses.trim().length() > 0) {
             // User provided classlist, use it as-is.
