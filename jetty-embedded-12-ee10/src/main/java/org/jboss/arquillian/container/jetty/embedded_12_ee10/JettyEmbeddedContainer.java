@@ -29,6 +29,8 @@ import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.ee10.cdi.CdiDecoratingListener;
+import org.eclipse.jetty.ee10.cdi.CdiServletContainerInitializer;
 import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
@@ -252,6 +254,15 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             App app = appProvider.createApp(archive);
             deployer.removeApp(app);
             WebAppContext webAppContext = getWebAppContext(app);
+
+            // Jetty setup telling Jetty's CdiDecoratingListener how to operate.
+            webAppContext.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
+            // jetty setup for layer between Weld and Jetty.
+            webAppContext.addServletContainerInitializer(new CdiServletContainerInitializer());
+            // Weld's org.jboss.weld.environment.servlet.EnhancedListener can be discovered automatically
+            // However, it won't happen if jetty-ee10-annotations JAR isn't present in runtime, hence we add it explicitly
+            // The listener will start up Weld container so long as there is an archive with any beans in it
+            webAppContext.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
 
             if (containerConfig.areMimeTypesSet()) {
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
