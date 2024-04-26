@@ -30,11 +30,14 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.descriptor.api.Descriptors;
 import org.jboss.shrinkwrap.descriptor.api.webapp30.WebAppDescriptor;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,15 +62,17 @@ public class JettyEmbeddedClientTestCase {
     @Deployment(testable = false)
     public static WebArchive getTestArchive() {
         return ShrinkWrap.create(WebArchive.class, "client-http.war")
-            .addClass(MyServlet.class)
+            .addClass(MyOtherServlet.class)
+            .addClass(MyOtherBean.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
                 .version("4.0")
                 .createServlet()
-                .servletClass(MyServlet.class.getName())
-                .servletName("MyServlet").up()
+                .servletClass(MyOtherServlet.class.getName())
+                .servletName("MyOtherServlet").up()
                 .createServletMapping()
-                .servletName("MyServlet")
-                .urlPattern(MyServlet.URL_PATTERN).up()
+                .servletName("MyOtherServlet")
+                .urlPattern(MyOtherServlet.URL_PATTERN).up()
                 .exportAsString()));
     }
 
@@ -119,12 +124,12 @@ public class JettyEmbeddedClientTestCase {
     @Test
     public void shouldBeAbleToInvokeServletInDeployedWebApp() throws Exception {
 
-        String body = httpClient.GET(new URL(url, MyServlet.URL_PATTERN).toURI()).getContentAsString();
+        String body = httpClient.GET(new URL(url, MyOtherServlet.URL_PATTERN).toURI()).getContentAsString();
 
         assertThat(
             "Verify that the servlet was deployed and returns expected result",
             body,
-            Matchers.is(MyServlet.MESSAGE));
+            Matchers.is(MyOtherServlet.MESSAGE));
     }
 
     @Test

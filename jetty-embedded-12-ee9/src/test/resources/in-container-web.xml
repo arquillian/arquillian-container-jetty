@@ -17,8 +17,4 @@
     <env-entry-value>Remote</env-entry-value>
   </env-entry>
 
-  <listener>
-    <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
-  </listener>
-
 </web-app>

@@ -15,8 +15,7 @@
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <!-- when upgrading check if this fix JettyEmbeddedInContainerTestCase#shouldBeAbleToInjectMembersIntoTestClass -->
-    <version.weld>5.1.0.Final</version.weld>
+    <version.weld>5.1.2.Final</version.weld>
     <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>
 
     <!-- Jetty 12 need Java 17 -->
@@ -147,6 +146,11 @@
       <artifactId>alpn-api</artifactId>
       <version>1.1.3.v20160715</version>
     </dependency>
+    <!-- Needed for Jetty be able to perform injection into servlets/filters etc -->
+    <dependency>
+      <groupId>org.eclipse.jetty.ee10</groupId>
+      <artifactId>jetty-ee10-cdi</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.arquillian.junit5</groupId>
@@ -237,7 +241,6 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>

@@ -17,7 +17,9 @@
 package org.jboss.arquillian.container.jetty.embedded_12_ee10;
 
 import jakarta.annotation.Resource;
+import jakarta.enterprise.context.Dependent;
 
+@Dependent
 public class MyBean {
     @Resource(name = "name")
     private String name;
