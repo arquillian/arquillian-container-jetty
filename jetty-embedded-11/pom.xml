@@ -152,7 +152,7 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.0</version>
+      <version>4.1.0</version>
     </dependency>
 
     <!-- Weld servlet required for testing CDI injections -->
