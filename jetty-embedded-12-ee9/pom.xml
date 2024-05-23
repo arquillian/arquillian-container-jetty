@@ -119,6 +119,7 @@
       <scope>provided</scope>
     </dependency>
 
+
     <dependency>
       <groupId>org.eclipse.jetty.http2</groupId>
       <artifactId>jetty-http2-server</artifactId>
@@ -165,7 +166,7 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.1</version>
+      <version>4.0.1</version>
     </dependency>
 
     <!-- Weld servlet required for testing CDI injections -->

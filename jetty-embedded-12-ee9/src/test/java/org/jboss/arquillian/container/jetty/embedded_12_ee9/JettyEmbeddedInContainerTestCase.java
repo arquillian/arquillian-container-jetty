@@ -62,7 +62,7 @@ public class JettyEmbeddedInContainerTestCase {
             //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
                 Maven.configureResolver()
-                    .workOffline()
+                    //.workOffline()
                     .loadPomFromFile("pom.xml")
                     .resolve("org.jboss.weld.servlet:weld-servlet-core")
                        .withTransitivity()
