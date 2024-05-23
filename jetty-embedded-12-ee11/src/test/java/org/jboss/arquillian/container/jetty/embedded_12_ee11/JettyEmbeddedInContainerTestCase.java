@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_12_ee9;
+package org.jboss.arquillian.container.jetty.embedded_12_ee11;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -62,7 +62,7 @@ public class JettyEmbeddedInContainerTestCase {
             //.addClass(JettyEmbeddedConfiguration.class)
             .addAsLibraries(
                 Maven.configureResolver()
-                    //.workOffline()
+                    .workOffline()
                     .loadPomFromFile("pom.xml")
                     .resolve("org.jboss.weld.servlet:weld-servlet-core")
                        .withTransitivity()
@@ -112,7 +112,6 @@ public class JettyEmbeddedInContainerTestCase {
         assertThat(containerType, notNullValue());
         assertThat(containerType, is("Embedded"));
         assertThat(ds, notNullValue());
-
         try (Connection c = ds.getConnection()) {
             assertThat(c.getMetaData().getDatabaseProductName(), is("H2"));
         }
