@@ -32,6 +32,8 @@
 
     <!-- Versioning -->
     <version.arquillian_core>1.9.0.Final</version.arquillian_core>
+    <version.arquillian.enricher>10.0.0.Final</version.arquillian.enricher>
+    <version.arquillian.protocol>10.0.0.Final</version.arquillian.protocol>
 
     <version.shrinkwrap>3.3.0</version.shrinkwrap>
 
@@ -82,7 +84,21 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
+      <dependency>
+        <groupId>org.jboss.arquillian.protocol</groupId>
+        <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
+        <version>${version.arquillian.protocol}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.testenricher</groupId>
+        <artifactId>arquillian-testenricher-cdi-jakarta</artifactId>
+        <version>${version.arquillian.enricher}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.arquillian.testenricher</groupId>
+        <artifactId>arquillian-testenricher-resource-jakarta</artifactId>
+        <version>${version.arquillian.enricher}</version>
+      </dependency>
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
         <artifactId>weld-servlet-core</artifactId>
