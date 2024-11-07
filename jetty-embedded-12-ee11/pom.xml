@@ -177,6 +177,13 @@
     </dependency>
 
     <dependency>
+      <groupId>jakarta.interceptor</groupId>
+      <artifactId>jakarta.interceptor-api</artifactId>
+      <version>2.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.smallrye</groupId>
       <artifactId>jandex</artifactId>
       <version>3.1.7</version>
