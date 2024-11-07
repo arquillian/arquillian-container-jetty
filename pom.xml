@@ -35,7 +35,7 @@
     <version.arquillian.enricher>10.0.0.Final</version.arquillian.enricher>
     <version.arquillian.protocol>10.0.0.Final</version.arquillian.protocol>
 
-    <version.shrinkwrap>3.3.1</version.shrinkwrap>
+    <version.shrinkwrap>3.3.2</version.shrinkwrap>
 
     <version.weld>3.1.8.Final</version.weld>
     <version.cdi-api>2.0</version.cdi-api>
