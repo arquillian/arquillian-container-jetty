@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_12_ee10;
+package org.jboss.arquillian.container.jetty.embedded_12_ee11;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,19 +10,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.eclipse.jetty.ee10.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.ee11.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
-import org.eclipse.jetty.ee10.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.ee10.plus.webapp.PlusConfiguration;
+import org.eclipse.jetty.ee11.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.ee11.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.ee10.webapp.FragmentConfiguration;
-import org.eclipse.jetty.ee10.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.FragmentConfiguration;
+import org.eclipse.jetty.ee11.webapp.JettyWebXmlConfiguration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -235,7 +234,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
 
     @Override
     public String getEnvironmentName() {
-        return "ee10";
+        return "ee11";
     }
 
     @Override
