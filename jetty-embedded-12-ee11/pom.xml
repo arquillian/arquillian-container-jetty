@@ -10,8 +10,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>arquillian-jetty-embedded-12-ee10</artifactId>
-  <name>Arquillian Container Jetty Embedded 12.0.x ee10</name>
+  <artifactId>arquillian-jetty-embedded-12-ee11</artifactId>
+  <name>Arquillian Container Jetty Embedded 12.0.x ee11</name>
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
@@ -34,21 +34,16 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>${jetty12.version}</version>
+        <version>${jetty12.1.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty.ee10</groupId>
-        <artifactId>jetty-ee10-bom</artifactId>
-        <version>${jetty12.version}</version>
+        <groupId>org.eclipse.jetty.ee11</groupId>
+        <artifactId>jetty-ee11-bom</artifactId>
+        <version>${jetty12.1.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.inject</groupId>
-        <artifactId>jakarta.inject-api</artifactId>
-        <version>2.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -108,20 +103,27 @@
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-webapp</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-webapp</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-annotations</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-annotations</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-plus</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-plus</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>2.0.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -146,8 +148,8 @@
     </dependency>
     <!-- Needed for Jetty be able to perform injection into servlets/filters etc -->
     <dependency>
-      <groupId>org.eclipse.jetty.ee10</groupId>
-      <artifactId>jetty-ee10-cdi</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-cdi</artifactId>
     </dependency>
 
     <dependency>
@@ -170,14 +172,21 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>4.0.1</version>
+      <version>4.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.interceptor</groupId>
+      <artifactId>jakarta.interceptor-api</artifactId>
+      <version>2.1.0</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>io.smallrye</groupId>
       <artifactId>jandex</artifactId>
-      <version>3.2.2</version>
+      <version>3.1.7</version>
       <scope>provided</scope>
     </dependency>
 
@@ -256,7 +265,7 @@
     <dependency>
       <groupId>jakarta.el</groupId>
       <artifactId>jakarta.el-api</artifactId>
-      <version>5.0.1</version>
+      <version>6.0.1</version>
       <scope>test</scope>
     </dependency>
 

@@ -103,10 +103,7 @@ public class ArquillianAppProvider extends AbstractLifeCycle implements AppProvi
         final File exported;
         try {
             if (this.config.isUseArchiveNameAsContext()) {
-                Path tmpDirectory = Files.createTempDirectory("arquillian-jetty");
-                Path archivePath = tmpDirectory.resolveSibling(archive.getName());
-                Files.deleteIfExists(archivePath);
-                exported = Files.createFile(archivePath).toFile();
+                exported = Files.createFile(EXPORT_DIR.toPath().resolve(archive.getName())).toFile();
                 exported.deleteOnExit();
             } else {
                 // If this method returns successfully then it is guaranteed that:

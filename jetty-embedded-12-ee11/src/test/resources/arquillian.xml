@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://jboss.org/schema/arquillian"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <engine>
+    <!-- property name="deploymentExportPath">target/</property -->
+  </engine>
+
+  <group qualifier="jetty-servers" default="true">
+    <container qualifier="http" default="true">
+      <configuration>
+        <property name="bindHttpPort">0</property>
+        <property name="mimeTypes">
+          js application/js
+          txt text/plain
+        </property>
+        <property name="inferredEncodings">
+          text/html iso-8859-1
+        </property>
+        <property name="h2cEnabled">true</property>
+<!--        <property name="dumpServerAfterStart">true</property>-->
+        <property name="httpConfigurationProperties">
+          relativeRedirectAllowed false
+        </property>
+      </configuration>
+    </container>
+
+    <container qualifier="https">
+      <configuration>
+        <property name="bindHttpPort">0</property>
+        <property name="ssl">true</property>
+        <property name="keystorePath">src/test/resources/keystore.p12</property>
+        <property name="keystorePassword">storepwd</property>
+      </configuration>
+    </container>
+  </group>
+
+</arquillian>
