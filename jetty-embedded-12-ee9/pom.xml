@@ -15,7 +15,7 @@
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.weld>5.1.2.Final</version.weld>
+    <version.weld>5.0.0.SP2</version.weld>
 
     <!-- Jetty 12 need Java 17 -->
     <maven.compiler.target>17</maven.compiler.target>
