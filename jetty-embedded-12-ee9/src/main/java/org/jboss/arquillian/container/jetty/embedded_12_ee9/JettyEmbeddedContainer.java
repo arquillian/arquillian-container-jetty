@@ -277,10 +277,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
             for (ServletHolder servlet : servletHandler.getServlets()) {
-                if(servlet.getServletContext() != null) {
+                if(servlet.getServletContext() == null) {
+                    httpContext.add(new Servlet(servlet.getName(), "/"));
+                } else {
                     httpContext.add(new Servlet(servlet.getName(), servlet.getServletContext().getContextPath()));
                 }
-
             }
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Exception e) {
