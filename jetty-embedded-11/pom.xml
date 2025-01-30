@@ -16,7 +16,7 @@
 
   <properties>
     <version.jetty>11.0.20</version.jetty>
-    <version.weld>4.0.3.Final</version.weld>
+    <version.weld>6.0.0.Final</version.weld>
 
     <!-- Jetty 11 need Java 11 -->
     <maven.compiler.target>11</maven.compiler.target>
