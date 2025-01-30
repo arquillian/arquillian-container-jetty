@@ -146,6 +146,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server = new Server();
 
             HttpConfiguration httpConfig = getHttpConfiguration();
+            httpConfig.setUseInputDirectByteBuffers(false);
+            httpConfig.setUseOutputDirectByteBuffers(false);
 
             ConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfig);
             // Setup Connector
