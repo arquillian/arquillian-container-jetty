@@ -104,13 +104,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     private JettyEmbeddedConfiguration containerConfig;
 
     @Inject
-    @DeploymentScoped
-    private InstanceProducer<ArquillianAppProvider> contextHandlerProducer;
-
-
-    @Inject
     @ApplicationScoped
-    private InstanceProducer<ServletContext> servletContextInstanceProducer;
+    private InstanceProducer<ContextHandler> servletContextInstanceProducer;
 
     @Inject
     private Instance<ServiceLoader> serviceLoader;
@@ -252,7 +247,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     @Override
     public void undeploy(Archive<?> archive) throws DeploymentException {
-        deployer.undeploy(appProvider.createContextHandler(archive));
+        deployer.undeploy(servletContextInstanceProducer.get());
     }
 
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
@@ -275,7 +270,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
             }
 
-            servletContextInstanceProducer.set(webAppContext.getServletContext());
+            servletContextInstanceProducer.set(contextHandler);
             deployer.deploy(contextHandler);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
