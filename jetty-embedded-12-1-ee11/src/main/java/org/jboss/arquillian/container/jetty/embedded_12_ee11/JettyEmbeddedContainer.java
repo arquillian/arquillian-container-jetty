@@ -256,7 +256,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
             ContextHandler contextHandler = appProvider.createContextHandler(archive);
-            //deployer.undeploy(contextHandler);
 
             WebAppContext webAppContext = getWebAppContext(contextHandler);
 

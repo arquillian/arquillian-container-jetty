@@ -15,6 +15,7 @@ import org.eclipse.jetty.ee11.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.ee11.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.ee11.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.util.FileID;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.ee11.webapp.FragmentConfiguration;
 import org.eclipse.jetty.ee11.webapp.JettyWebXmlConfiguration;
@@ -128,7 +129,7 @@ public class ArquillianAppProvider {
 
         String context = file.toFile().getName();
 
-        if (isWebArchiveFile(file)) {
+        if (FileID.isExtension(file, "war", "jar")) {
             // Context Path is the same as the archive.
             context = context.substring(0, context.length() - 4);
         } else {
@@ -202,12 +203,4 @@ public class ArquillianAppProvider {
         return webAppContext;
     }
 
-    private static boolean isWebArchiveFile(Path path) {
-        if (!path.toFile().isFile()) {
-            return false;
-        } else {
-            String name = path.toFile().getName().toLowerCase(Locale.ENGLISH);
-            return name.endsWith(".war") || name.endsWith(".jar");
-        }
-    }
 }
