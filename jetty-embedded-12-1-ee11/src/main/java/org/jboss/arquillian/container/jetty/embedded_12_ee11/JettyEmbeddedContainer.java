@@ -258,7 +258,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
             ContextHandler contextHandler = appProvider.createContextHandler(archive);
-            deployer.undeploy(contextHandler);
+            //deployer.undeploy(contextHandler);
 
             WebAppContext webAppContext = getWebAppContext(contextHandler);
 
@@ -276,7 +276,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             }
 
             servletContextInstanceProducer.set(webAppContext.getServletContext());
-
+            deployer.deploy(contextHandler);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
             for (ServletHolder servlet : servletHandler.getServlets()) {
@@ -287,7 +287,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 }
             }
 
-            deployer.deploy(contextHandler);
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Exception e) {
             throw new DeploymentException("Could not deploy " + archive.getName(), e);

@@ -76,7 +76,7 @@ public class ArquillianAppProvider {
     }
 
     private final JettyEmbeddedConfiguration config;
-    private Deployer deployer;
+
     private final Collection<WebAppContextProcessor> webAppContextProcessors;
 
     public ArquillianAppProvider(JettyEmbeddedConfiguration config, Collection<WebAppContextProcessor> webAppContextProcessors) {
