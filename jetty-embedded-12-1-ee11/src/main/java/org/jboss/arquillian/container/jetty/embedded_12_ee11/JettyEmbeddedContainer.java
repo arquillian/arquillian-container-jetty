@@ -60,7 +60,6 @@ import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
-import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
@@ -105,7 +104,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     @Inject
     @ApplicationScoped
-    private InstanceProducer<ContextHandler> servletContextInstanceProducer;
+    private InstanceProducer<ContextHandler> contextHandlerInstanceProducer;
+
+    @Inject
+    @ApplicationScoped
+    private InstanceProducer<ServletContext> servletContextInstanceProducer;
 
     @Inject
     private Instance<ServiceLoader> serviceLoader;
@@ -247,7 +250,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     @Override
     public void undeploy(Archive<?> archive) throws DeploymentException {
-        deployer.undeploy(servletContextInstanceProducer.get());
+        deployer.undeploy(contextHandlerInstanceProducer.get());
     }
 
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
@@ -256,6 +259,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             //deployer.undeploy(contextHandler);
 
             WebAppContext webAppContext = getWebAppContext(contextHandler);
+
+            servletContextInstanceProducer.set(webAppContext.getServletContext());
 
             // Jetty setup telling Jetty's CdiDecoratingListener how to operate.
             webAppContext.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
@@ -270,7 +275,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
             }
 
-            servletContextInstanceProducer.set(contextHandler);
+            contextHandlerInstanceProducer.set(contextHandler);
             deployer.deploy(contextHandler);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
