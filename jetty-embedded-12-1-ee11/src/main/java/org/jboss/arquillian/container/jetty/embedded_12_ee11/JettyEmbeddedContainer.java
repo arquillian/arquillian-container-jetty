@@ -26,9 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.codehaus.plexus.util.ReflectionUtils;
-import org.eclipse.jetty.deploy.App;
-import org.eclipse.jetty.deploy.AppLifeCycle;
-import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.deploy.Deployer;
+import org.eclipse.jetty.deploy.StandardDeployer;
 import org.eclipse.jetty.ee11.cdi.CdiDecoratingListener;
 import org.eclipse.jetty.ee11.cdi.CdiServletContainerInitializer;
 import org.eclipse.jetty.http.CookieCompliance;
@@ -99,14 +98,15 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     private Server server;
     private String listeningHost;
     private int listeningPort;
-    private DeploymentManager deployer;
+    private Deployer deployer;
     private ArquillianAppProvider appProvider;
 
     private JettyEmbeddedConfiguration containerConfig;
 
     @Inject
     @DeploymentScoped
-    private InstanceProducer<App> webAppContextProducer;
+    private InstanceProducer<ArquillianAppProvider> contextHandlerProducer;
+
 
     @Inject
     @ApplicationScoped
@@ -140,7 +140,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     public void start() throws LifecycleException {
-        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "12.0");
+        EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "12.1");
 
         try {
             server = new Server();
@@ -176,11 +176,9 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             ContextHandlerCollection contexts = new ContextHandlerCollection();
 
             // Deployment Management
-            deployer = new DeploymentManager();
-            deployer.setContexts(contexts);
+            deployer = new StandardDeployer(contexts);
             Collection<WebAppContextProcessor> webAppContextProcessors = serviceLoader.get().all(WebAppContextProcessor.class);
             appProvider = new ArquillianAppProvider(containerConfig, webAppContextProcessors);
-            deployer.addAppProvider(appProvider);
             server.addBean(deployer);
 
             // Handler Collection
@@ -209,6 +207,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 listeningHost = containerConfig.getBindAddress();
             }
             listeningPort = connector.getLocalPort();
+
         } catch (Exception e) {
             throw new LifecycleException("Could not start container", e);
         }
@@ -251,11 +250,17 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    @Override
+    public void undeploy(Archive<?> archive) throws DeploymentException {
+        deployer.undeploy(appProvider.createContextHandler(archive));
+    }
+
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
-            App app = appProvider.createApp(archive);
-            deployer.removeApp(app);
-            WebAppContext webAppContext = getWebAppContext(app);
+            ContextHandler contextHandler = appProvider.createContextHandler(archive);
+            deployer.undeploy(contextHandler);
+
+            WebAppContext webAppContext = getWebAppContext(contextHandler);
 
             // Jetty setup telling Jetty's CdiDecoratingListener how to operate.
             webAppContext.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
@@ -270,10 +275,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
             }
 
-            deployer.addApp(app);
-            deployer.requestAppGoal(app, AppLifeCycle.STARTED);
-
-            webAppContextProducer.set(app);
             servletContextInstanceProducer.set(webAppContext.getServletContext());
 
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
@@ -285,14 +286,16 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
                     httpContext.add(new Servlet(servlet.getName(), servlet.getServletContext().getContextPath()));
                 }
             }
+
+            deployer.deploy(contextHandler);
             return new ProtocolMetaData().addContext(httpContext);
         } catch (Exception e) {
             throw new DeploymentException("Could not deploy " + archive.getName(), e);
         }
     }
 
-    private WebAppContext getWebAppContext(App app) throws Exception {
-        ContextHandler handler = app.getContextHandler();
+    private WebAppContext getWebAppContext(ContextHandler handler) throws Exception {
+
         WebAppContext webAppContext;
         if (handler instanceof WebAppContext) {
             webAppContext = (WebAppContext) handler;
@@ -300,13 +303,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             throw new DeploymentException("Deployment of raw ContextHandler's not supported by Arquillian");
         }
         return webAppContext;
-    }
-
-    public void undeploy(Archive<?> archive) throws DeploymentException {
-        App app = webAppContextProducer.get();
-        if (app != null) {
-            deployer.requestAppGoal(app, AppLifeCycle.UNDEPLOYED);
-        }
     }
 
     /**

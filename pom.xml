@@ -51,7 +51,7 @@
     <maven.compiler.release>8</maven.compiler.release>
 
     <jetty12.version>12.0.15</jetty12.version>
-    <jetty12.1.version>12.1.0.alpha0</jetty12.1.version>
+    <jetty12.1.version>12.1.0.alpha2</jetty12.1.version>
 
   </properties>
 
@@ -229,7 +229,7 @@
     <module>jetty-embedded-9</module>
     <module>jetty-embedded-10</module>
     <module>jetty-embedded-11</module>
-    <module>jetty-embedded-12-ee11</module>
+    <module>jetty-embedded-12-1-ee11</module>
     <module>jetty-embedded-12-ee10</module>
     <module>jetty-embedded-12-ee9</module>
     <module>jetty-common</module>

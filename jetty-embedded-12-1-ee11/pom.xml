@@ -10,8 +10,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>arquillian-jetty-embedded-12-ee11</artifactId>
-  <name>Arquillian Container Jetty Embedded 12.0.x ee11</name>
+  <artifactId>arquillian-jetty-embedded-12-1-ee11</artifactId>
+  <name>Arquillian Container Jetty Embedded 12.1.x ee11</name>
   <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
