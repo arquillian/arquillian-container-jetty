@@ -76,6 +76,7 @@ public class JettyEmbeddedInContainerTestCase {
     public static WebArchive getEncodingTestArchive() {
         return ShrinkWrap.create(WebArchive.class)
             .addClass(MyEncodingServlet.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
                 .version("4.0")
                 .createServlet()

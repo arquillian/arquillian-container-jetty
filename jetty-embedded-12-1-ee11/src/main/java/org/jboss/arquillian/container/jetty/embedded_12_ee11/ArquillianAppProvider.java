@@ -85,7 +85,7 @@ public class ArquillianAppProvider {
         this.webAppContextProcessors = webAppContextProcessors;
     }
 
-    protected ContextHandler createContextHandler(final Archive<?> archive) {
+    protected WebAppContext createWebAppContext(final Archive<?> archive) {
         String name = archive.getName();
         int extOff = name.lastIndexOf('.');
         if (extOff <= 0) {

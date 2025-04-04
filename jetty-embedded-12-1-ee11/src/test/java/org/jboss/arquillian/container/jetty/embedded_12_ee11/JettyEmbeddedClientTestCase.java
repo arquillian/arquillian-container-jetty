@@ -81,6 +81,7 @@ public class JettyEmbeddedClientTestCase {
     public static WebArchive getTestArchiveHttps() {
         return ShrinkWrap.create(WebArchive.class, "client-https.war")
             .addClass(MyServlet.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             .setWebXML(new StringAsset(Descriptors.create(WebAppDescriptor.class)
                 .version("4.0")
                 .createServlet()

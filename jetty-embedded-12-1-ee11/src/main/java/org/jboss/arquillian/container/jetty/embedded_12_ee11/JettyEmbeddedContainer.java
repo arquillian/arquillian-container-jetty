@@ -21,7 +21,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +38,6 @@ import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
@@ -45,7 +46,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.ee11.servlet.ServletHandler;
 import org.eclipse.jetty.ee11.servlet.ServletHolder;
 import org.eclipse.jetty.util.TypeUtil;
@@ -104,7 +104,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     @Inject
     @ApplicationScoped
-    private InstanceProducer<ContextHandler> contextHandlerInstanceProducer;
+    private InstanceProducer<Map<Archive<?>,WebAppContext>> webAppContextMapInstanceProducer;
+
+    @Inject
+    @ApplicationScoped
+    private InstanceProducer<WebAppContext> webAppContextInstanceProducer;
 
     @Inject
     @ApplicationScoped
@@ -113,20 +117,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     @Inject
     private Instance<ServiceLoader> serviceLoader;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getConfigurationClass()
-     */
+    @Override
     public Class<JettyEmbeddedConfiguration> getConfigurationClass() {
         return JettyEmbeddedConfiguration.class;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#getDefaultProtocol()
-     */
+    @Override
     public ProtocolDescription getDefaultProtocol() {
         // Jetty 9 is a Servlet 3.1 container.
         // However, Arquillian "Protocol" actual means "Packaging"
@@ -137,6 +133,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         this.containerConfig = containerConfig;
     }
 
+    @Override
     public void start() throws LifecycleException {
         EnvUtil.assertMinimumJettyVersion(Server.getVersion(), "12.1");
 
@@ -180,8 +177,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             server.addBean(deployer);
 
             // Handler Collection
-            Handler.Collection collection = new Handler.Sequence(contexts, new DefaultHandler());
-            server.setHandler(collection);
+            server.setHandler(contexts);
 
             if (containerConfig.isRealmPropertiesFileSet()) {
                 String realmName = getRealmName();
@@ -197,6 +193,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             }
 
             server.setDumpAfterStart(containerConfig.isDumpServerAfterStart());
+
             log.info("Starting Jetty Embedded Server " + Server.getVersion() + " [id:" + server.hashCode() + "]");
             server.start();
 
@@ -221,61 +218,71 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
         return fileName;
     }
 
+    @Override
     public void stop() throws LifecycleException {
         try {
             log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
+            ContextHandlerCollection collection = ((ContextHandlerCollection)server.getHandler());
+            collection.getHandlers().forEach(handler -> ((ContextHandlerCollection)server.getHandler()).removeHandler(handler));
             server.stop();
         } catch (Exception e) {
             throw new LifecycleException("Could not stop container", e);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#deploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-     */
+    @Override
     public void deploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.arquillian.spi.client.container.DeployableContainer#undeploy(org.jboss.shrinkwrap.descriptor.api.Descriptor)
-     */
+    @Override
     public void undeploy(Descriptor descriptor) throws DeploymentException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public void undeploy(Archive<?> archive) throws DeploymentException {
-        deployer.undeploy(contextHandlerInstanceProducer.get());
+//        deployer.undeploy(contextHandlerInstanceProducer.get());
+        deployer.undeploy(webAppContextInstanceProducer.get());
+        Optional.ofNullable(webAppContextMapInstanceProducer.get())
+            .ifPresent(map -> map.remove(archive));
+
     }
 
+    @Override
     public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
-            ContextHandler contextHandler = appProvider.createContextHandler(archive);
+            //ContextHandler contextHandler = ;
 
-            WebAppContext webAppContext = getWebAppContext(contextHandler);
+            WebAppContext webAppContext = getWebAppContext(appProvider.createWebAppContext(archive));
 
-            servletContextInstanceProducer.set(webAppContext.getServletContext());
+            webAppContextInstanceProducer.set(webAppContext);
 
             // Jetty setup telling Jetty's CdiDecoratingListener how to operate.
             webAppContext.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
+            //webAppContext.setInitParameter(CdiServletContainerInitializer.CDI_INTEGRATION_ATTRIBUTE, CdiDecoratingListener.MODE);
+
             // jetty setup for layer between Weld and Jetty.
             webAppContext.addServletContainerInitializer(new CdiServletContainerInitializer());
             // Weld's org.jboss.weld.environment.servlet.EnhancedListener can be discovered automatically
             // However, it won't happen if jetty-ee11-annotations JAR isn't present in runtime, hence we add it explicitly
             // The listener will start up Weld container so long as there is an archive with any beans in it
-            webAppContext.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
+            //webAppContext.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
 
             if (containerConfig.areMimeTypesSet()) {
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));
             }
 
-            contextHandlerInstanceProducer.set(contextHandler);
-            deployer.deploy(contextHandler);
+            servletContextInstanceProducer.set(webAppContext.getServletContext());
+            webAppContextInstanceProducer.set(webAppContext);
+            Map<Archive<?>,WebAppContext> webAppContextMap = webAppContextMapInstanceProducer.get();
+            if(webAppContextMap==null) {
+                webAppContextMap = new HashMap<>();
+            }
+            webAppContextMap.put(archive, webAppContext);
+            webAppContextMapInstanceProducer.set(webAppContextMap);
+
+            deployer.deploy(webAppContext);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
             for (ServletHolder servlet : servletHandler.getServlets()) {
@@ -293,7 +300,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     private WebAppContext getWebAppContext(ContextHandler handler) throws Exception {
-
         WebAppContext webAppContext;
         if (handler instanceof WebAppContext) {
             webAppContext = (WebAppContext) handler;
