@@ -226,6 +226,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             collection.getHandlers().forEach(handler -> ((ContextHandlerCollection)server.getHandler()).removeHandler(handler));
             server.stop();
         } catch (Exception e) {
+            // very ugly.....
+            // see https://github.com/weld/core/discussions/3151
+            if (e instanceof IllegalStateException && e.getMessage().contains("Singleton not set for STATIC_INSTANCE => []")){
+                return;
+            }
             throw new LifecycleException("Could not stop container", e);
         }
     }
