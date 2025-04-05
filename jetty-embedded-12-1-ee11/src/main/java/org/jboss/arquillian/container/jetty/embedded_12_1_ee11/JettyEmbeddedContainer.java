@@ -21,9 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,10 +99,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     private ArquillianAppProvider appProvider;
 
     private JettyEmbeddedConfiguration containerConfig;
-
-    @Inject
-    @ApplicationScoped
-    private InstanceProducer<Map<Archive<?>,WebAppContext>> webAppContextMapInstanceProducer;
 
     @Inject
     @ApplicationScoped
@@ -222,15 +216,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public void stop() throws LifecycleException {
         try {
             log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
-            //ContextHandlerCollection collection = ((ContextHandlerCollection)server.getHandler());
-            //collection.getHandlers().forEach(handler -> ((ContextHandlerCollection)server.getHandler()).removeHandler(handler));
             server.stop();
         } catch (Exception e) {
-//            // very ugly.....
-//            // see https://github.com/weld/core/discussions/3151
-//            if (e instanceof IllegalStateException && e.getMessage().contains("Singleton not set for STATIC_INSTANCE => []")){
-//                return;
-//            }
             throw new LifecycleException("Could not stop container", e);
         }
     }
@@ -247,11 +234,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
     @Override
     public void undeploy(Archive<?> archive) throws DeploymentException {
-//        deployer.undeploy(contextHandlerInstanceProducer.get());
         deployer.undeploy(webAppContextInstanceProducer.get());
-        Optional.ofNullable(webAppContextMapInstanceProducer.get())
-            .ifPresent(map -> map.remove(archive));
-
     }
 
     @Override
@@ -269,11 +252,7 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
             // jetty setup for layer between Weld and Jetty.
             webAppContext.addServletContainerInitializer(new CdiServletContainerInitializer());
-            // Weld's org.jboss.weld.environment.servlet.EnhancedListener can be discovered automatically
-            // However, it won't happen if jetty-ee11-annotations JAR isn't present in runtime, hence we add it explicitly
-            // The listener will start up Weld container so long as there is an archive with any beans in it
-            //webAppContext.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
-            
+            webAppContext.setInitParameter(org.jboss.weld.Container.CONTEXT_ID_KEY, webAppContext.getContextPath());
 
 
             if (containerConfig.areMimeTypesSet()) {
@@ -282,13 +261,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
 
             servletContextInstanceProducer.set(webAppContext.getServletContext());
             webAppContextInstanceProducer.set(webAppContext);
-            Map<Archive<?>,WebAppContext> webAppContextMap = webAppContextMapInstanceProducer.get();
-            if(webAppContextMap==null) {
-                webAppContextMap = new HashMap<>();
-            }
-            webAppContextMap.put(archive, webAppContext);
-            webAppContextMapInstanceProducer.set(webAppContextMap);
-
             deployer.deploy(webAppContext);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
