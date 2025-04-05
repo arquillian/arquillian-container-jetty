@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_12_ee11;
+package org.jboss.arquillian.container.jetty.embedded_12_1_ee11;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.eclipse.jetty.deploy.Deployer;
 import org.eclipse.jetty.ee11.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.ee11.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.ee11.plus.webapp.PlusConfiguration;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.FileID;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.ee11.webapp.FragmentConfiguration;

@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_12_ee11;
+package org.jboss.arquillian.container.jetty.embedded_12_1_ee11;
 
 import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.jboss.shrinkwrap.api.Archive;

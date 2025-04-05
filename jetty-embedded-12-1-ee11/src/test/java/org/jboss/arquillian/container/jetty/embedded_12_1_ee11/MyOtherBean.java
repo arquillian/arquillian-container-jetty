@@ -1,4 +1,4 @@
-package org.jboss.arquillian.container.jetty.embedded_12_ee11;
+package org.jboss.arquillian.container.jetty.embedded_12_1_ee11;
 
 import jakarta.enterprise.context.Dependent;
 

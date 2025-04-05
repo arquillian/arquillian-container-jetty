@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_12_ee11;
+package org.jboss.arquillian.container.jetty.embedded_12_1_ee11;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -222,15 +222,15 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     public void stop() throws LifecycleException {
         try {
             log.info("Stopping Jetty Embedded Server [id:" + server.hashCode() + "]");
-            ContextHandlerCollection collection = ((ContextHandlerCollection)server.getHandler());
-            collection.getHandlers().forEach(handler -> ((ContextHandlerCollection)server.getHandler()).removeHandler(handler));
+            //ContextHandlerCollection collection = ((ContextHandlerCollection)server.getHandler());
+            //collection.getHandlers().forEach(handler -> ((ContextHandlerCollection)server.getHandler()).removeHandler(handler));
             server.stop();
         } catch (Exception e) {
-            // very ugly.....
-            // see https://github.com/weld/core/discussions/3151
-            if (e instanceof IllegalStateException && e.getMessage().contains("Singleton not set for STATIC_INSTANCE => []")){
-                return;
-            }
+//            // very ugly.....
+//            // see https://github.com/weld/core/discussions/3151
+//            if (e instanceof IllegalStateException && e.getMessage().contains("Singleton not set for STATIC_INSTANCE => []")){
+//                return;
+//            }
             throw new LifecycleException("Could not stop container", e);
         }
     }
@@ -273,6 +273,8 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             // However, it won't happen if jetty-ee11-annotations JAR isn't present in runtime, hence we add it explicitly
             // The listener will start up Weld container so long as there is an archive with any beans in it
             //webAppContext.addServletContainerInitializer(new org.jboss.weld.environment.servlet.EnhancedListener());
+            
+
 
             if (containerConfig.areMimeTypesSet()) {
                 containerConfig.getMimeTypes().forEach((s, s2) -> webAppContext.getMimeTypes().addMimeMapping(s, s2));

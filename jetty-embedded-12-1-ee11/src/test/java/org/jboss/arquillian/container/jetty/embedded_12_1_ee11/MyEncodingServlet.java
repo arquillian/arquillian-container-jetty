@@ -14,30 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.arquillian.container.jetty.embedded_12_ee11;
-
-import java.io.IOException;
+package org.jboss.arquillian.container.jetty.embedded_12_1_ee11;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+
 /**
- * TestServlet
+ * MyEncodingServlet
  *
- * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
  */
-public class MyServlet extends HttpServlet {
+public class MyEncodingServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public static final String URL_PATTERN = "Test";
+    public static final String URL_PATTERN = "encoding";
 
-    public static final String MESSAGE = "hello";
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        response.getWriter().append(MESSAGE);
+        response.setContentType("text/html");
+        String encoding = response.getCharacterEncoding();
+        response.getWriter().append(encoding);
     }
 }
