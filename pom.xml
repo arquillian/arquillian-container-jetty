@@ -35,7 +35,7 @@
     <version.arquillian.enricher>10.0.0.Final</version.arquillian.enricher>
     <version.arquillian.protocol>10.0.0.Final</version.arquillian.protocol>
 
-    <version.shrinkwrap>3.3.1</version.shrinkwrap>
+    <version.shrinkwrap>3.3.4</version.shrinkwrap>
 
     <version.weld>3.1.8.Final</version.weld>
     <version.cdi-api>2.0</version.cdi-api>
@@ -50,8 +50,8 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.release>8</maven.compiler.release>
 
-    <jetty12.version>12.0.18</jetty12.version>
-    <jetty12.1.version>12.1.0.alpha2</jetty12.1.version>
+    <jetty12.version>12.0.23</jetty12.version>
+    <jetty12.1.version>12.1.0.beta2</jetty12.1.version>
 
   </properties>
 
@@ -172,7 +172,7 @@
   <repositories>
     <repository>
       <id>jetty.snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</url>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
