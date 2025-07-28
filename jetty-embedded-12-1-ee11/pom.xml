@@ -10,18 +10,18 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>arquillian-jetty-embedded-11</artifactId>
-  <name>Arquillian Container Jetty Embedded 11.0.x</name>
-  <description>Jetty Embedded 11.0.x container integration for the Arquillian project</description>
+  <artifactId>arquillian-jetty-embedded-12-1-ee11</artifactId>
+  <name>Arquillian Container Jetty Embedded 12.1.x ee11</name>
+  <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
 
   <properties>
-    <version.jetty>11.0.20</version.jetty>
-    <version.weld>4.0.3.Final</version.weld>
+    <version.weld>6.0.1.Final</version.weld>
+    <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>
 
-    <!-- Jetty 11 need Java 11 -->
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.release>11</maven.compiler.release>
+    <!-- Jetty 12 need Java 17 -->
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <dependencyManagement>
@@ -30,12 +30,18 @@
         <groupId>org.jboss.weld.servlet</groupId>
         <artifactId>weld-servlet-core</artifactId>
         <version>${version.weld}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-bom</artifactId>
-        <version>${version.jetty}</version>
+        <version>${jetty12.1.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.ee11</groupId>
+        <artifactId>jetty-ee11-bom</artifactId>
+        <version>${jetty12.1.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -87,10 +93,9 @@
 
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
+      <artifactId>jetty-server</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-deploy</artifactId>
@@ -98,27 +103,37 @@
     </dependency>
 
     <dependency>
-      <!-- Jetty annotations needed for Servlet 3.1 support -->
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-annotations</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-webapp</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <!-- Jetty plus and naming required for testing resource injections -->
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-plus</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>2.0.1</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.jetty.http2</groupId>
-      <artifactId>http2-server</artifactId>
+      <artifactId>jetty-http2-server</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty.http2</groupId>
-      <artifactId>http2-hpack</artifactId>
+      <artifactId>jetty-http2-hpack</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -130,6 +145,11 @@
       <groupId>org.eclipse.jetty.alpn</groupId>
       <artifactId>alpn-api</artifactId>
       <version>1.1.3.v20160715</version>
+    </dependency>
+    <!-- Needed for Jetty be able to perform injection into servlets/filters etc -->
+    <dependency>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-cdi</artifactId>
     </dependency>
 
     <dependency>
@@ -152,7 +172,22 @@
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
-      <version>3.0.0</version>
+      <version>4.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.interceptor</groupId>
+      <artifactId>jakarta.interceptor-api</artifactId>
+      <version>2.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.smallrye</groupId>
+      <artifactId>jandex</artifactId>
+      <version>3.1.7</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Weld servlet required for testing CDI injections -->
@@ -219,7 +254,6 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -235,8 +269,9 @@
     </dependency>
 
     <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
+      <groupId>jakarta.el</groupId>
+      <artifactId>jakarta.el-api</artifactId>
+      <version>6.0.1</version>
       <scope>test</scope>
     </dependency>
 
@@ -249,7 +284,7 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <id>ban-javax-servlet-api</id>
+            <id>ban-javax-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
