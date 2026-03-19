@@ -98,12 +98,7 @@ public class ArquillianAppProvider {
         final File exported;
         try {
             if (this.config.isUseArchiveNameAsContext()) {
-                Path war = EXPORT_DIR.toPath().resolve(archive.getName());
-                if(Files.exists(war)) {
-                    LOG.warning("File already exists: " + war + ". Removing it.");
-                    Files.deleteIfExists(war);
-                }
-                exported = Files.createFile(war).toFile();
+                exported = EXPORT_DIR.toPath().resolve(archive.getName()).toFile();
                 exported.deleteOnExit();
             } else {
                 // If this method returns successfully then it is guaranteed that:
