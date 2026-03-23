@@ -18,7 +18,7 @@
     <version.jetty>9.4.58.v20250814</version.jetty>
 
     <!-- Weld 2.2.x is first version of Weld to properly support Jetty 9 -->
-    <version.weld>3.1.9.Final</version.weld>
+    <version.weld>6.0.4.Final</version.weld>
   </properties>
 
   <dependencyManagement>
