@@ -60,7 +60,7 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaD
 import org.jboss.arquillian.container.spi.client.protocol.metadata.Servlet;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.InstanceProducer;
-import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
+import org.jboss.arquillian.container.spi.context.annotation.DeploymentScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.shrinkwrap.api.Archive;
@@ -101,11 +101,11 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     private JettyEmbeddedConfiguration containerConfig;
 
     @Inject
-    @ApplicationScoped
+    @DeploymentScoped
     private InstanceProducer<WebAppContext> webAppContextInstanceProducer;
 
     @Inject
-    @ApplicationScoped
+    @DeploymentScoped
     private InstanceProducer<ServletContext> servletContextInstanceProducer;
 
     @Inject
@@ -260,7 +260,6 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
             }
 
             servletContextInstanceProducer.set(webAppContext.getServletContext());
-            webAppContextInstanceProducer.set(webAppContext);
             deployer.deploy(webAppContext);
             HTTPContext httpContext = new HTTPContext(listeningHost, listeningPort);
             ServletHandler servletHandler = webAppContext.getServletHandler();
