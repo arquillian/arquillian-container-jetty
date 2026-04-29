@@ -233,12 +233,12 @@ public class JettyEmbeddedContainer implements DeployableContainer<JettyEmbedded
     }
 
     @Override
-    public void undeploy(Archive<?> archive) throws DeploymentException {
+    public synchronized void undeploy(Archive<?> archive) throws DeploymentException {
         deployer.undeploy(webAppContextInstanceProducer.get());
     }
 
     @Override
-    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
+    public synchronized ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException {
         try {
             //ContextHandler contextHandler = ;
 
