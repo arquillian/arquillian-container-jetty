@@ -12,7 +12,7 @@
 
   <artifactId>arquillian-jetty-embedded-12-ee9</artifactId>
   <name>Arquillian Container Jetty Embedded 12.0.x ee9</name>
-  <description>Jetty Embedded 12.0.x container integration for the Arquillian project</description>
+  <description>Jetty Embedded 12.0.x EE 9 container integration for the Arquillian project</description>
 
   <properties>
     <version.weld>5.1.2.Final</version.weld>

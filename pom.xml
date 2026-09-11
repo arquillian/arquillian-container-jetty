@@ -19,13 +19,46 @@
   <packaging>pom</packaging>
   <name>Arquillian Container Parent Jetty</name>
   <description>Jetty Container integrations for the Arquillian Project</description>
+  <url>https://github.com/arquillian/arquillian-container-jetty</url>
+
+  <inceptionYear>2009</inceptionYear>
+  <organization>
+    <name>Arquillian Community</name>
+    <url>https://arquillian.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
   <scm>
-    <connection>scm:git:git://git@github.com:arquillian/arquillian-container-jetty.git</connection>
-    <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-container-jetty.git</developerConnection>
-    <url>git://github.com/arquillian/arquillian-container-jetty.git</url>
+    <connection>scm:git:https://github.com/arquillian/arquillian-container-jetty.git</connection>
+    <developerConnection>scm:git:git@github.com:arquillian/arquillian-container-jetty.git</developerConnection>
+    <url>https://github.com/arquillian/arquillian-container-jetty</url>
     <tag>HEAD</tag>
   </scm>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/arquillian/arquillian-container-jetty/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>GitHub Actions</system>
+    <url>https://github.com/arquillian/arquillian-container-jetty/actions</url>
+  </ciManagement>
+
+  <developers>
+    <developer>
+      <id>arquillian.org</id>
+      <name>Arquillian Community</name>
+      <organization>arquillian.org</organization>
+      <organizationUrl>https://arquillian.org</organizationUrl>
+    </developer>
+  </developers>
 
   <!-- Properties -->
   <properties>
@@ -50,6 +83,13 @@
 
     <jetty12.version>12.0.25</jetty12.version>
     <jetty12.1.version>12.1.0</jetty12.1.version>
+
+    <!-- maven-release-plugin configuration -->
+    <releaseProfiles>central-release</releaseProfiles>
+
+    <!-- TODO temporarily disabled to test release configuration and thus use the local directory when using perform -->
+    <pushChanges>false</pushChanges>
+    <localCheckout>true</localCheckout>
 
   </properties>
 
@@ -167,30 +207,8 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <id>jetty.snapshots</id>
-      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <pushChanges>false</pushChanges>
-          <localCheckout>true</localCheckout>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

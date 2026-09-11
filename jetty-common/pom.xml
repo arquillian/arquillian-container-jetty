@@ -10,6 +10,7 @@
 
   <artifactId>arquillian-jetty-common</artifactId>
   <name>Arquillian Container Jetty Common Utilities</name>
+  <description>Common utilities shared by the Jetty container integrations for the Arquillian project</description>
 
   <dependencies>
 
