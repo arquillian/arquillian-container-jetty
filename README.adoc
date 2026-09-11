@@ -1,0 +1,94 @@
+= Arquillian - Jetty Containers image:https://github.com/arquillian/arquillian-container-jetty/actions/workflows/maven.yml/badge.svg[GH Actions Build Status,link=https://github.com/arquillian/arquillian-container-jetty/actions/workflows/maven.yml?query=branch%3Amain]
+
+Arquillian Container Jetty provides `DeployableContainer` implementations for managing the lifecycle of embedded Jetty
+instances within Arquillian tests.
+Test archives are deployed programmatically into a Jetty server running in the same JVM as the test cases.
+
+== Available containers
+
+|===
+|Artifact |Jetty |Servlet API |Minimum Java
+
+|`arquillian-jetty-embedded-9`
+|9.4.x
+|`javax.servlet`
+|11
+
+|`arquillian-jetty-embedded-10`
+|10.0.x
+|`javax.servlet`
+|11
+
+|`arquillian-jetty-embedded-11`
+|11.0.x
+|`jakarta.servlet`
+|11
+
+|`arquillian-jetty-embedded-12-ee9`
+|12.0.x
+|`jakarta.servlet` (EE 9)
+|17
+
+|`arquillian-jetty-embedded-12-ee10`
+|12.0.x
+|`jakarta.servlet` (EE 10)
+|17
+
+|`arquillian-jetty-embedded-12-1-ee11`
+|12.1.x
+|`jakarta.servlet` (EE 11)
+|17
+|===
+
+All artifacts are published under the `org.jboss.arquillian.container` group identifier.
+
+== Usage
+
+Add the container adapter matching your Jetty version to your test classpath:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.jboss.arquillian.container</groupId>
+  <artifactId>arquillian-jetty-embedded-12-ee10</artifactId>
+  <version>${version.arquillian.jetty}</version>
+  <scope>test</scope>
+</dependency>
+----
+
+The container is configured in `arquillian.xml`.
+A minimal configuration that lets Jetty pick a free port looks as follows:
+
+[source,xml]
+----
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <container qualifier="jetty" default="true">
+    <configuration>
+      <property name="bindHttpPort">0</property>
+    </configuration>
+  </container>
+
+</arquillian>
+----
+
+Commonly used configuration properties include `bindAddress`, `bindHttpPort`, `mimeTypes`, `configurationClasses` and
+`useArchiveNameAsContext`, along with `ssl`, `keystorePath` and `keystorePassword` for HTTPS.
+See `AbstractJettyEmbeddedConfiguration` for the full set,
+and the `arquillian.xml` files under each module's `src/test/resources` for working examples.
+
+CDI support requires Weld Servlet and its associated configuration on the test classpath.
+
+== Building
+
+[source,bash]
+----
+mvn clean install
+----
+
+== License
+
+Licensed under the Apache License, Version 2.0.
+See link:LICENSE[LICENSE] for details.
