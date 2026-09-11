@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
-    <version>47</version>
+    <version>53</version>
     <relativePath />
   </parent>
 
@@ -46,9 +46,7 @@
     <version.slf4j>2.0.17</version.slf4j>
 
     <!-- override from parent -->
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.release>8</maven.compiler.release>
+    <jdk.min.version>17</jdk.min.version>
 
     <jetty12.version>12.0.25</jetty12.version>
     <jetty12.1.version>12.1.0</jetty12.1.version>
