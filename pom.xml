@@ -87,10 +87,6 @@
     <!-- maven-release-plugin configuration -->
     <releaseProfiles>central-release</releaseProfiles>
 
-    <!-- TODO temporarily disabled to test release configuration and thus use the local directory when using perform -->
-    <pushChanges>false</pushChanges>
-    <localCheckout>true</localCheckout>
-
   </properties>
 
   <dependencyManagement>
