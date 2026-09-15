@@ -9,21 +9,6 @@ Test archives are deployed programmatically into a Jetty server running in the s
 |===
 |Artifact |Jetty |Servlet API |Minimum Java
 
-|`arquillian-jetty-embedded-9`
-|9.4.x
-|`javax.servlet`
-|11
-
-|`arquillian-jetty-embedded-10`
-|10.0.x
-|`javax.servlet`
-|11
-
-|`arquillian-jetty-embedded-11`
-|11.0.x
-|`jakarta.servlet`
-|11
-
 |`arquillian-jetty-embedded-12-ee9`
 |12.0.x
 |`jakarta.servlet` (EE 9)

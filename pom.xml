@@ -70,11 +70,6 @@
 
     <version.shrinkwrap>3.3.4</version.shrinkwrap>
 
-    <version.weld>3.1.8.Final</version.weld>
-    <version.cdi-api>2.0</version.cdi-api>
-    <version.glassfish.el>2.2</version.glassfish.el>
-    <version.jsp-api>2.2</version.jsp-api>
-    <version.servlet-api>4.0.1</version.servlet-api>
     <version.h2>2.3.232</version.h2>
     <version.slf4j>2.0.19</version.slf4j>
 
@@ -133,36 +128,6 @@
         <groupId>org.jboss.arquillian.testenricher</groupId>
         <artifactId>arquillian-testenricher-resource-jakarta</artifactId>
         <version>${version.arquillian.enricher}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.weld.servlet</groupId>
-        <artifactId>weld-servlet-core</artifactId>
-        <version>${version.weld}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.enterprise</groupId>
-        <artifactId>cdi-api</artifactId>
-        <version>${version.cdi-api}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.web</groupId>
-        <artifactId>el-impl</artifactId>
-        <version>${version.glassfish.el}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>${version.jsp-api}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${version.servlet-api}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -239,9 +204,6 @@
   </profiles>
 
   <modules>
-    <module>jetty-embedded-9</module>
-    <module>jetty-embedded-10</module>
-    <module>jetty-embedded-11</module>
     <module>jetty-embedded-12-1-ee11</module>
     <module>jetty-embedded-12-ee10</module>
     <module>jetty-embedded-12-ee9</module>
