@@ -68,7 +68,7 @@
     <version.arquillian.enricher>10.0.0.Final</version.arquillian.enricher>
     <version.arquillian.protocol>10.0.0.Final</version.arquillian.protocol>
 
-    <version.shrinkwrap>3.3.4</version.shrinkwrap>
+    <version.shrinkwrap>3.3.7</version.shrinkwrap>
 
     <version.h2>2.3.232</version.h2>
     <version.slf4j>2.0.19</version.slf4j>
