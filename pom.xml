@@ -78,6 +78,7 @@
 
     <jetty12.version>12.0.25</jetty12.version>
     <jetty12.1.version>12.1.0</jetty12.1.version>
+    <jetty13.version>13.0.0-SNAPSHOT</jetty13.version>
 
     <!-- maven-release-plugin configuration -->
     <releaseProfiles>central-release</releaseProfiles>
@@ -203,10 +204,25 @@
     </profile>
   </profiles>
 
+  <!-- Jetty 13.0.x is only published as snapshots for now. -->
+  <repositories>
+    <repository>
+      <id>central-snapshots</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <modules>
     <module>jetty-embedded-12-1-ee11</module>
     <module>jetty-embedded-12-ee10</module>
     <module>jetty-embedded-12-ee9</module>
+    <module>jetty-embedded-13</module>
     <module>jetty-common</module>
   </modules>
 

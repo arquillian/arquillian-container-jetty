@@ -23,6 +23,11 @@ Test archives are deployed programmatically into a Jetty server running in the s
 |12.1.x
 |`jakarta.servlet` (EE 11)
 |17
+
+|`arquillian-jetty-embedded-13`
+|13.0.x
+|`jakarta.servlet` (EE 10 or EE 11, see below)
+|25
 |===
 
 All artifacts are published under the `org.jboss.arquillian.container` group identifier.
@@ -40,6 +45,42 @@ Add the container adapter matching your Jetty version to your test classpath:
   <scope>test</scope>
 </dependency>
 ----
+
+=== Jetty 13
+
+Jetty 13 shares one set of EE classes (`org.eclipse.jetty.ee`) across EE versions, and the EE version is picked by
+the Jetty EE dependencies on the classpath.
+`arquillian-jetty-embedded-13` works the same way: it only depends on the shared classes, so you add the Jetty EE
+dependencies for the EE version you want, plus a matching Weld if you use CDI.
+For EE 11:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.jboss.arquillian.container</groupId>
+  <artifactId>arquillian-jetty-embedded-13</artifactId>
+  <version>${version.arquillian.jetty}</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.eclipse.jetty.ee11</groupId>
+  <artifactId>jetty-ee11-cdi</artifactId>
+  <version>${version.jetty}</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.jboss.weld.servlet</groupId>
+  <artifactId>weld-servlet-core</artifactId>
+  <version>6.0.4.Final</version>
+  <scope>test</scope>
+</dependency>
+----
+
+For EE 10, use `org.eclipse.jetty.ee10:jetty-ee10-cdi` and Weld 5.1.x instead.
+Importing `org.eclipse.jetty:jetty-bom` and `org.eclipse.jetty.ee:jetty-ee-bom` keeps all the Jetty versions in line.
+The selected EE version is shown when the server starts, for example `Starting Jetty Embedded Server 13.0.0 (ee11)`.
+
+=== Configuration
 
 The container is configured in `arquillian.xml`.
 A minimal configuration that lets Jetty pick a free port looks as follows:
